@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "outDir": "./dist",
+    "rootDir": "./",   // Set rootDir to the project root
+    "strict": true
+  },
+  "include": [
+    "src/**/*",        // Includes everything in the 'src' folder
+    "prisma/**/*"      // Includes 'prisma' folder outside of 'src'
+, "routes", "index.ts"  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

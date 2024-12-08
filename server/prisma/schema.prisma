@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int           @id @default(autoincrement())
+  name            String
+  email           String        @unique
+  password        String
+  username        String?       @unique
+  posts           Post[]        
+  connectionsFrom Connection[]  @relation("fromUser")
+  connectionsTo   Connection[]  @relation("toUser")
+  likes           Like[]        
+  comments        Comment[]     
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  content   String
+  username  String
+  name      String
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime  @default(now())
+  likes     Like[]    
+  comments  Comment[] 
+}
+
+model Connection {
+  id         Int      @id @default(autoincrement())
+  name       String
+  username   String
+  fromUserID Int
+  toUserId   Int
+  fromUser   User     @relation("fromUser", fields: [fromUserID], references: [id])
+  toUser     User     @relation("toUser", fields: [toUserId], references: [id])
+  status     Status   @default(notfollowed)
+}
+
+enum Status {
+  notfollowed
+  followed
+}
+
+model Like {
+  id          Int       @id @default(autoincrement())
+  fromUserId  Int
+  userId      Int
+  postId      Int?      
+  commentId   Int?     
+  user        User      @relation(fields: [userId], references: [id])
+  post        Post?     @relation(fields: [postId], references: [id])
+ 
+  createdAt DateTime  @default(now())
+}
+
+model Comment {
+  id         Int       @id @default(autoincrement())
+  content    String
+  userId     Int
+  postId     Int       
+  parentId   Int?      
+  user       User      @relation(fields: [userId], references: [id])
+  post       Post      @relation(fields: [postId], references: [id])
+  createdAt  DateTime  @default(now())
+}
