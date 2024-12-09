@@ -51,8 +51,4 @@ router.post("/like", auth_1.default, (req, res) => __awaiter(void 0, void 0, voi
         }
     }
 }));
-router.post("/unlike", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id: fromUserId } = req.user;
-    const { postId, authorId } = req.body;
-}));
 exports.default = router;

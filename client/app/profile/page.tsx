@@ -13,20 +13,25 @@ interface Post {
   liked: boolean; 
 }
 
-export default function Home() {
+
+
+
+export default function Profile() {
   const [posts, setPosts] = useState<Post[]>([]);
+  
 
   useEffect(() => {
     const fetchPosts = async () => {
       const authtoken = localStorage.getItem("token");
 
       try {
-        const response = await axios.get("http://localhost:5000/post/bulk", {
+        const response = await axios.get("http://localhost:5000/post/mypost", {
           headers: {
             Authorization: `Bearer ${authtoken}`,
             "Content-Type": "application/json",
           },
         });
+        console.log(response.data)
 
         
         const postsWithLikeState = response.data.map((post: Post) => ({
@@ -86,13 +91,9 @@ export default function Home() {
 
         
         <div className="border-gray-700 border-x-2 sm:basis-11/12 lg:basis-6/12">
-          <div className="w-full h-12 flex text-2xl justify-center items-center">Q</div>
-          <div className="w-full border-b-2 border-gray-700 h-12 md:h-16 text-xl flex flex-row">
-            <div className="basis-1/2 flex justify-center cursor-pointer hover:bg-gray-900 items-center">For You</div>
-            <div className="basis-1/2 flex justify-center cursor-pointer hover:bg-gray-900 items-center">Following</div>
-          </div>
-
-          {/* Posts */}
+          
+      <div>{}</div>
+      
           <div>
             {posts.map((post) => (
               <div key={post.id} className="pt-2 pl-4 w-full border-b-2 border-gray-700 overflow-auto pb-4">
@@ -109,7 +110,7 @@ export default function Home() {
                 <div className="ml-16 text-gray-300">{post.content}</div>
 
                 <div className="flex justify-between px-10 cursor-pointer pt-4">
-                  {/* Like Button */}
+                
                   <svg
                     onClick={() => handleLike(post.id, post.authorId)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +129,7 @@ export default function Home() {
                     />
                   </svg>
 
-                  {/* Other Icons */}
+                 
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

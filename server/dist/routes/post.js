@@ -32,12 +32,14 @@ router.post('/post', auth_1.default, (req, res) => __awaiter(void 0, void 0, voi
     res.status(201).json({ message: 'Post created successfully', data: response });
 }));
 router.get("/mypost", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.user;
-    console.log(id);
+    const { id, name, username } = req.user;
     const response = yield db_1.default.post.findMany({
         where: { authorId: id }
     });
-    res.json(response);
+    res.json({ name: name,
+        username: username,
+        response
+    });
 }));
 router.delete("/delete", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const postid = req.body.postid;

@@ -35,15 +35,23 @@ router.post('/post', authMiddleware, async (req: AuthenticatedRequest, res: Resp
 
 
 router.get("/mypost",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
-  const { id } = req.user as JwtPayload; 
-  console.log(id)
+  const { id,name,username } = req.user as JwtPayload; 
+   
  
   const response = await client.post.findMany({
     where:{authorId:id}
     
   })
 
-  res.json(response)
+  res.json({name:name,
+    username:username,
+    response
+  })
+
+
+ 
+
+ 
 
 })
 
