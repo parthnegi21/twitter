@@ -16,13 +16,13 @@ const express_1 = __importDefault(require("express"));
 const db_1 = __importDefault(require("../prisma/db"));
 const auth_1 = __importDefault(require("../middleware/auth"));
 const router = express_1.default.Router();
-router.post("/", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.body;
-    const response = yield db_1.default.user.findMany({
+router.get("/:username", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const username = req.params.username;
+    const response = yield db_1.default.user.findUnique({
         where: {
-            id
+            username
         }
     });
-    res.json(id);
+    res.json(response);
 }));
 exports.default = router;

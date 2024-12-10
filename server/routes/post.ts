@@ -117,5 +117,15 @@ else{
 
 })
   
+
+router.get("/userpost/:username",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+  const username = req.params.username 
+  const response = await client.post.findMany({
+    where:{
+  username
+    }
+  })
+  res.json(response)
+})
   
 export default router;

@@ -8,12 +8,13 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { AuthenticatedRequest } from '../types';
 
 const router = express.Router();
-router.post("/",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
-    const{id} =req.query
 
-    const response = await client.user.findMany({
+router.get("/:username",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+    const username = req.params.username
+
+    const response = await client.user.findUnique({
         where:{
-            id
+            username
         }
     })
     res.json(response)

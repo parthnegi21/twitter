@@ -60,4 +60,20 @@ router.get("/count", auth_1.default, (req, res) => __awaiter(void 0, void 0, voi
         following: following.length
     });
 }));
+router.post("/usercount", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.body.id;
+    const following = yield db_1.default.connection.findMany({
+        where: {
+            fromUserID: id
+        }
+    });
+    const follower = yield db_1.default.connection.findMany({
+        where: {
+            toUserId: id
+        }
+    });
+    res.json({ follower: follower.length,
+        following: following.length
+    });
+}));
 exports.default = router;

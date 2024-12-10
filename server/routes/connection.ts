@@ -6,6 +6,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 
 import { AuthenticatedRequest } from '../types';
+import { parse } from 'path';
 
 const router = express.Router();
 
@@ -49,6 +50,28 @@ router.get("/count",authMiddleware,async(req:AuthenticatedRequest,res:Response):
    
   const {id } = req.user as JwtPayload;
 
+  const following = await client.connection.findMany({
+    where:{
+      fromUserID:id
+    }
+  })
+  
+  const follower = await client.connection.findMany({
+    where:{
+      toUserId:id
+    }
+  })
+ res.json({follower:follower.length,
+  following:following.length
+ })
+
+
+ 
+})
+
+
+router.post("/usercount",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+ const id = req.body.id
   const following = await client.connection.findMany({
     where:{
       fromUserID:id

@@ -2,8 +2,9 @@
 import Loader from "@/components/loading";
 import Sidebar from "@/components/sideber";
 import axios from "axios";
+import { setLazyProp } from "next/dist/server/api-utils";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 interface Post {
   id: number;
@@ -14,19 +15,38 @@ interface Post {
   username: string;
 }
 
-export default function Home() {
-  const router = useRouter()
+type Userdata ={
+  name:String,
+  username:String,
+  id:String
+
+}
+
+type count ={
+  followers:any,
+  following:any
+}
+
+export default function Profile() {
+  const params = useParams()
   const [posts, setPosts] = useState<Post[]>([]);
   const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
-  const [loading,setloading]=useState(true)
+  const [detail,setdetail]=useState<Userdata | null>(null)
+  const[count,setcount]=useState<count|null>(null)
+  const [countloading,setcountloading]=useState(true)
+  const [postloading,setpostloading]=useState(true)
+
+
+  
 
   useEffect(() => {
-    setloading(true)
+    setpostloading(true)
     const fetchPosts = async () => {
       const authtoken = localStorage.getItem("token");
+      const username = params?.username
 
-      try {
-        const response = await axios.get("http://localhost:5000/post/bulk", {
+      
+        const response = await axios.get(`http://localhost:5000/post/userpost/${username}`, {
           headers: {
             Authorization: `Bearer ${authtoken}`,
             "Content-Type": "application/json",
@@ -34,19 +54,87 @@ export default function Home() {
         });
 
         setPosts(response.data);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-      setloading(false)
+       
+      
+        
+        
+      
+      setpostloading(false)
     };
 
     fetchPosts();
   }, []);
 
 
+  useEffect(()=>{
+const user = async()=>{
+  const authtoken = localStorage.getItem("token")
+  const username = params?.username
+  const response = await axios.get(`http://localhost:5000/profile/${username}`,{
+    headers: {
+      Authorization: `Bearer ${authtoken}`,
+      "Content-Type": "application/json",
+    },
+  })
+ 
+    const userDetails:Userdata = {
+          name: response.data.name, 
+          username: response.data.username, 
+          id:response.data.id
+        };
+        setdetail(userDetails)
+        
+
+}
+user()
+  },[])
+
+
+  
+  useEffect(() => {
+    setcountloading(true)
+    const follow = async () => {
+      
+        const authtoken = localStorage.getItem("token");
+        const id = detail?.id;
+        
+        if (!id) {
+          console.log("No ID available to send in the request.");
+          return;
+        }
+  
+        const response = await axios.post(
+          `http://localhost:5000/connect/usercount`, 
+          { id:id },
+          {
+            headers: {
+              Authorization: `Bearer ${authtoken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const userCount :count={
+          followers:response.data.follower,
+          following:response.data.following
+        }
+        
+        setcount(userCount)
+        setcountloading(false)
+       
+      
+    };
+    
+  
+    follow();
+  }, [detail]);
+  
+
+  
+  
+
   const handleLike = async (postId: number, authorId: number) => {
     const authtoken = localStorage.getItem("token");
-    try {
+   
       const response = await axios.post(
         "http://localhost:5000/react/like",
         { postId, authorId },
@@ -62,11 +150,8 @@ export default function Home() {
       } else {
         setLikedPosts((prev) => ({ ...prev, [postId]: false }));
       }
-    } catch (error) {
-      console.error("Error liking post:", error);
-    }
+    
   };
-
 
   return (
     <div className="md:flex justify-center items-center w-full h-screen bg-black">
@@ -77,25 +162,30 @@ export default function Home() {
         
 
         <div className="border-gray-700 border-x-2 sm:basis-11/12 lg:basis-6/12">
-          <div className="w-full h-12 flex text-2xl justify-center items-center">Q</div>
-          <div className="w-full border-b-2 border-gray-700 h-12 md:h-16 text-xl flex flex-row">
-            <div className="basis-1/2 flex justify-center cursor-pointer hover:bg-gray-900 items-center">
-              For You
-            </div>
-            <div className="basis-1/2 flex justify-center cursor-pointer hover:bg-gray-900 items-center">
-              Following
-            </div>
+        
+        {countloading || postloading  ? (<Loader/>):(<>
+       <div className="border-b-2 border-gray-700">
+        
+          <div className="flex ">
+            <div>
+          <div className="w-20 basic-11/12 h-20 rounded-full border-2 border-gray-500 flex justify-center items-center text-3xl ml-10 xl:mr-60 mt-10 font-bold ">{detail?.name[0].toUpperCase()}</div>
+          <div className="text-xl ml-4 mt-4">{detail?.name}</div>
+          <div className="text-gray-500 ml-4 text-lg">@{detail?.username}</div>
           </div>
-
-         
+          
+          </div>
+          <div className="mt-10 ml-4 mb-4 flex">
+          <div className="mr-8" >{count?.followers} Followers</div>
+          <div>{count?.following} Following</div>
+          </div>
+          </div>
+          
 
           <div>
-            {loading ? (<Loader/>):(<>
-            {posts.map((post) => (
+            {posts.length > 0?(
+            posts.map((post) => (
               <div key={post.id} className="pt-2 pl-4 w-full border-b-2 border-gray-700 overflow-auto pb-4">
-                <div className="flex cursor-pointer" onClick={()=>{
-                  router.push(`/profile/${post.username}`)
-                }}>
+                <div className="flex">
                   <div className="h-10 w-10 border-2 border-gray-700 rounded-full flex justify-center font-semibold items-center mt-1">
                     {post.name[0].toUpperCase()}
                   </div>
@@ -153,12 +243,16 @@ export default function Home() {
                   </svg>
                 </div>
               </div>
-            ))}
-            </>)}
+            ))):(
+              <div className="flex justify-center text-4xl font-semibold ">no post yet</div>
+            )}
           </div>
+          </>
+        )}
         </div>
 
-        <div className="hidden md:block basis-3/12"></div>
+        <div className="hidden md:block basis-3/12">
+         </div>
       </div>
     </div>
   );

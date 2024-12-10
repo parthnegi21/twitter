@@ -81,4 +81,13 @@ router.get("/bulk", auth_1.default, (req, res) => __awaiter(void 0, void 0, void
         res.json(response);
     }
 }));
+router.get("/userpost/:username", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const username = req.params.username;
+    const response = yield db_1.default.post.findMany({
+        where: {
+            username
+        }
+    });
+    res.json(response);
+}));
 exports.default = router;
