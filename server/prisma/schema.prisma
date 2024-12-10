@@ -38,8 +38,8 @@ model Connection {
   username   String
   fromUserID Int
   toUserId   Int
-  fromUser   User     @relation("fromUser", fields: [fromUserID], references: [id])
-  toUser     User     @relation("toUser", fields: [toUserId], references: [id])
+  fromUser   User?     @relation("fromUser", fields: [fromUserID], references: [id])
+  toUser     User?     @relation("toUser", fields: [toUserId], references: [id])
  
 }
 
