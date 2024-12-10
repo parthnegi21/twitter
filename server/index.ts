@@ -4,6 +4,7 @@ import cors from 'cors';
 import postRouter from './routes/post'; 
 import connectionRouter from './routes/connection'
 import reactRouter    from  './routes/react'
+import userRouter from './routes/user'
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use('/post', postRouter);
 app.use('/connect', connectionRouter);
 app.use('/react',reactRouter)
+app.use('/profile',userRouter)
 
 
 // Start Server
