@@ -17,30 +17,54 @@ router.post("/follow",authMiddleware,async(req:AuthenticatedRequest,res:Response
     const check = await client.connection.findMany({
         where:{fromUserID:id,toUserId}
     })
+    console.log(check)
 
-  if (check.length > 0 && check[0].status === "followed") 
-  {
-         res.json("Guy is already followed")
-  }
+    if(check.length==0 ){
 
-  else{
-    const response = await client.connection.create({
-        data:{
-               name,
-               username,
-               fromUserID:id,
-               toUserId,
-               status:"followed"
-        }
-    })
-
-if(response){
-    res.json("friend request sent successfully")
+     
+    const follow = await client.connection.create({
+      data:{
+             name,
+             username,
+             fromUserID:id,
+             toUserId,
+            
+      }
+  })
+  res.json("followed successfully")
 }
-  }
+else{
+  const unfollow = await client.connection.deleteMany({
+    where:{
+      fromUserID:id,
+      toUserId
+    }
+  })
+  res.json("unfollowed successfully")
+}
+
 })
 
+router.get("/count",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+   
+  const {id } = req.user as JwtPayload;
 
+  const following = await client.connection.findMany({
+    where:{
+      fromUserID:id
+    }
+  })
+  
+  const follower = await client.connection.findMany({
+    where:{
+      toUserId:id
+    }
+  })
+ res.json({follower:follower.length,
+  following:following.length
+ })
+
+})
 
 
 

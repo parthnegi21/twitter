@@ -22,22 +22,42 @@ router.post("/follow", auth_1.default, (req, res) => __awaiter(void 0, void 0, v
     const check = yield db_1.default.connection.findMany({
         where: { fromUserID: id, toUserId }
     });
-    if (check.length > 0 && check[0].status === "followed") {
-        res.json("Guy is already followed");
-    }
-    else {
-        const response = yield db_1.default.connection.create({
+    console.log(check);
+    if (check.length == 0) {
+        const follow = yield db_1.default.connection.create({
             data: {
                 name,
                 username,
                 fromUserID: id,
                 toUserId,
-                status: "followed"
             }
         });
-        if (response) {
-            res.json("friend request sent successfully");
-        }
+        res.json("followed successfully");
     }
+    else {
+        const unfollow = yield db_1.default.connection.deleteMany({
+            where: {
+                fromUserID: id,
+                toUserId
+            }
+        });
+        res.json("unfollowed successfully");
+    }
+}));
+router.get("/count", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.user;
+    const following = yield db_1.default.connection.findMany({
+        where: {
+            fromUserID: id
+        }
+    });
+    const follower = yield db_1.default.connection.findMany({
+        where: {
+            toUserId: id
+        }
+    });
+    res.json({ follower: follower.length,
+        following: following.length
+    });
 }));
 exports.default = router;

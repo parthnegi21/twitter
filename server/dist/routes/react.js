@@ -51,4 +51,16 @@ router.post("/like", auth_1.default, (req, res) => __awaiter(void 0, void 0, voi
         }
     }
 }));
+router.post("/count", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { postId, authorId } = req.body;
+    const count = yield db_1.default.like.findMany({
+        where: {
+            postId: postId,
+            userId: authorId
+        }
+    });
+    res.json({ postId: postId,
+        likescount: count.length
+    });
+}));
 exports.default = router;

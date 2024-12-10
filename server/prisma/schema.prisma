@@ -40,13 +40,9 @@ model Connection {
   toUserId   Int
   fromUser   User     @relation("fromUser", fields: [fromUserID], references: [id])
   toUser     User     @relation("toUser", fields: [toUserId], references: [id])
-  status     Status   @default(notfollowed)
+ 
 }
 
-enum Status {
-  notfollowed
-  followed
-}
 
 model Like {
   id          Int       @id @default(autoincrement())

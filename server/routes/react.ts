@@ -53,7 +53,19 @@ else{
     
 })
 
-
+router.post("/count",async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+    const {postId,authorId}= req.body
+    const count = await client.like.findMany({
+        where:{
+            postId:postId,
+            userId:authorId
+            
+        }
+    })
+    res.json({postId:postId,
+        likescount:count.length
+    })
+})
 
 
 export default router
