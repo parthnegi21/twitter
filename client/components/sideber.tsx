@@ -1,4 +1,7 @@
+"use client"
+import { useRouter } from "next/navigation"
 export default function Sidebar(){
+  const router = useRouter()
     return(
     <div className="justify-center sm:basis-1/12 lg:basis-3/12">
     <div className="hidden sm:block mt-4 flex font-bold lg:ml-20 text-8xl">Q</div>
@@ -19,11 +22,15 @@ export default function Sidebar(){
 </svg>
 <div className="hidden lg:ml-2 mt-1  lg:block">Search</div>
 </div>
-<div className="flex cursor-pointer hover:bg-gray-900 w-12 xl:w-40 xl:pr-2 h-12 items-center rounded-3xl justify-center">
+
+
+<div onClick={()=>{
+  router.push("/premium")
+}} className="flex cursor-pointer hover:bg-gray-900 w-12 xl:w-40 xl:pr-2 h-12 items-center rounded-3xl justify-center">
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="sm:size-9 size-8">
 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
 </svg>
-<div className="hidden lg:ml-2 lg:block">Premium</div>
+<div className="hidden  lg:ml-2 lg:block">Premium</div>
 </div>
 
 <div className="flex cursor-pointer hover:bg-gray-900 w-12 xl:pl-1 xl:w-40 h-12 items-center rounded-3xl justify-center">

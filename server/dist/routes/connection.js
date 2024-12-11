@@ -76,4 +76,17 @@ router.post("/usercount", auth_1.default, (req, res) => __awaiter(void 0, void 0
         following: following.length
     });
 }));
+router.post("/check", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.user;
+    const toUserId = req.body.id;
+    const check = yield db_1.default.connection.findFirst({
+        where: { fromUserID: id, toUserId }
+    });
+    if (check) {
+        res.json("Followed");
+    }
+    else {
+        res.json("NotFollowed");
+    }
+}));
 exports.default = router;

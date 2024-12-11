@@ -89,6 +89,22 @@ router.post("/usercount",authMiddleware,async(req:AuthenticatedRequest,res:Respo
 
 })
 
+router.post("/check",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+  const {id } = req.user as JwtPayload;
+  const toUserId = req.body.id;
+  const check = await client.connection.findFirst({
+    where:{fromUserID:id,toUserId}
+})
 
+if(check){
+  res.json("Followed")
+}
+
+else{
+  res.json("NotFollowed")
+}
+
+
+})
 
 export default router

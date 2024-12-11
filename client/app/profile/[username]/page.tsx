@@ -35,6 +35,8 @@ export default function Profile() {
   const[count,setcount]=useState<count|null>(null)
   const [countloading,setcountloading]=useState(true)
   const [postloading,setpostloading]=useState(true)
+  const[followed,setfollowed]=useState(true)
+  const [textfollow,settextfollow]=useState("Follow")
 
 
   
@@ -88,6 +90,34 @@ const user = async()=>{
 }
 user()
   },[])
+
+  useEffect(()=>{
+    const checkfollow =async()=>{
+      const authtoken = localStorage.getItem("token")
+      const response = await axios.post("http://localhost:5000/connect/check",{
+        id:detail?.id
+      },{
+        headers:{
+          Authorization: `Bearer ${authtoken}`,
+      "Content-Type": "application/json",
+        }
+      })
+      console.log(response.data)
+      if(response.data == "NotFollowed"){
+        setfollowed(false)
+        settextfollow("Follow")
+      }
+      else{
+        setfollowed(true)
+        settextfollow("Following")
+      }
+      
+    }
+     checkfollow()
+
+
+    
+  },[detail])
 
 
   
@@ -172,13 +202,16 @@ user()
           <div className="text-xl ml-4 mt-4">{detail?.name}</div>
           <div className="text-gray-500 ml-4 text-lg">@{detail?.username}</div>
           </div>
-          <button className="bg-white text-black w-32 h-10 border-2 border-black rounded-3xl shadow-4xl font-semibold text-lg hover:bg-gray-300 ml-28 mt-32 md:ml-60 lg:ml-80" onClick={async()=>{
+          <button className={` ${followed ? 'text-white bg-black border-gray-700 hover:text-red-500 hover:border-red-500':'text-black bg-white hover:bg-gray-300'}  w-32 h-10 border-2 border-black rounded-3xl shadow-4xl font-semibold text-lg  ml-28 mt-32 md:ml-60 lg:ml-80`}
+            onMouseEnter={() => followed && settextfollow("Unfollow")}
+            onMouseLeave={() => followed && settextfollow("Following")}
+          onClick={async()=>{
             const id = detail?.id;
-            console.log(id)
+             
             const authtoken = localStorage.getItem("token")
              const response = await axios.post("http://localhost:5000/connect/follow",
              {
-              toUserId:id
+              id:id
              }, {
               
               headers: {
@@ -186,9 +219,11 @@ user()
                 "Content-Type": "application/json",
               }
              })
-             console.log(response)
+             console.log(response.data)
+           
+            window.location.reload();
 
-          }}>Follow</button>
+          }}>{textfollow}</button>
           </div>
           <div className="mt-10 ml-4 mb-4 flex">
           <div className="mr-8" >{count?.followers} Followers</div>
