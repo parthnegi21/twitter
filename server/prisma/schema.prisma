@@ -66,3 +66,10 @@ model Comment {
   post       Post      @relation(fields: [postId], references: [id])
   createdAt  DateTime  @default(now())
 }
+
+model Message{
+  id     Int      @id @default(autoincrement())
+  fromUserID Int
+  ToUserId   Int
+  text       String
+}

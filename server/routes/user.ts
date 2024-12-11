@@ -20,4 +20,6 @@ router.get("/:username",authMiddleware,async(req:AuthenticatedRequest,res:Respon
     res.json(response)
 })
 
+
+
 export default router

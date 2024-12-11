@@ -5,6 +5,7 @@ import postRouter from './routes/post';
 import connectionRouter from './routes/connection'
 import reactRouter    from  './routes/react'
 import userRouter from './routes/user'
+import userMessage from './routes/message'
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use('/post', postRouter);
 app.use('/connect', connectionRouter);
 app.use('/react',reactRouter)
 app.use('/profile',userRouter)
+app.use('/message',userMessage)
 
 
 // Start Server

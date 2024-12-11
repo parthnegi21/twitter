@@ -147,7 +147,7 @@ export default function Profile() {
           
 
           <div>
-            {posts.length > 0?(
+            {posts.length >0?(
             posts.map((post) => (
               <div key={post.id} className="pt-2 pl-4 w-full border-b-2 border-gray-700 overflow-auto pb-4">
                 <div className="flex">
