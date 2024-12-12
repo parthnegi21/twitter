@@ -17,7 +17,7 @@ export default function Home() {
   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
 </svg>
 </div>
-    <div className="flex  flex-col  pt-4">
+    <div className="flex  flex-col  ">
    <div className="text-white flex justify-center xl:text-5xl xl:mb-4 text-2xl font-semibold">Upgrade to Premium</div>
    <div className="text-white flex text-center xl:text-lg justify-center">Enjoy an enhanced experience, exclusive creator tools, top-tier verification and security.</div>
 
