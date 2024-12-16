@@ -67,8 +67,8 @@ router.get("/:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 
     const message = yield db_1.default.message.findMany({
         where: {
             OR: [
-                { fromUserID: receiverId, ToUserId: myId },
-                { fromUserID: myId, ToUserId: receiverId }
+                { fromUserId: receiverId, toUserId: myId },
+                { fromUserId: myId, toUserId: receiverId }
             ]
         }
     });
@@ -79,11 +79,25 @@ router.post("/send:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, 
     const receiverId = parseInt(toId, 10);
     const { id: myId } = req.user;
     const text = req.body;
-    const sendMessage = yield db_1.default.message.create({
+    const response = yield db_1.default.message.create({
         data: {
-            fromUserID: myId,
-            ToUserId: receiverId,
+            fromUserId: myId,
+            toUserId: receiverId,
             text: text
+        }
+    });
+}));
+router.post("/read:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id: myId } = req.user;
+    const { id: toId } = req.params;
+    const receiverId = parseInt(toId, 10);
+    const readMessage = yield db_1.default.message.updateMany({
+        where: {
+            fromUserId: myId,
+            toUserId: receiverId
+        },
+        data: {
+            isRead: true
         }
     });
 }));

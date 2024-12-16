@@ -17,7 +17,9 @@ model User {
   connectionsFrom Connection[]  @relation("fromUser")
   connectionsTo   Connection[]  @relation("toUser")
   likes           Like[]        
-  comments        Comment[]     
+  comments        Comment[]    
+  messagesSent  Message[] @relation("SentMessages")
+  messagesReceived  Message[] @relation("ReceivedMessages") 
 }
 
 model Post {
@@ -69,7 +71,12 @@ model Comment {
 
 model Message{
   id     Int      @id @default(autoincrement())
-  fromUserID Int
-  ToUserId   Int
+  fromUserId Int
+  toUserId   Int
   text       String
+  isRead     Boolean  @default(false)
+  fromUser    User     @relation("SentMessages", fields: [fromUserId], references: [id])
+  toUser      User     @relation("ReceivedMessages", fields: [toUserId], references: [id])
+  createdAt  DateTime  @default(now())
 }
+

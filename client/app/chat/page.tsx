@@ -64,7 +64,10 @@ export default function Home() {
       </div>
     </div>
 
-    <div className="hidden border-r-2 border-gray-700 md:block basis-4/12"></div>
+    <div className="hidden border-r-2 border-gray-700  md:block basis-4/12">
+    <div className="w-full h-5/6  mt-10"></div>
+    <textarea className="w-full  bg-gray-900 border-2 border-gray-500 rounded-3xl flex text-xl  h-12 pt-2 flex pl-6"  placeholder="Start the Conversation"></textarea>
+      </div>
     <div className="hidden basis-1/12"></div>
   </div>
 </div>

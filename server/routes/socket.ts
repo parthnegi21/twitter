@@ -1,26 +1,62 @@
-import { Server } from "socket.io";
-import http from 'http';
-import  express  from "express";
+import WebSocket, { Server } from 'ws';
+import { Server as HTTPServer } from 'http'; 
+import client from "../prisma/db"
 
+export function startWebSocketServer(server: HTTPServer) {
+  const userConnections: { [userId: string]: WebSocket } = {};
 
-const app = express()
+  // Create the WebSocket server and bind it to the existing HTTP server
+  const wss = new Server({ server });
 
+  // When a WebSocket connection is established
+  wss.on('connection', (ws: WebSocket) => {
+    console.log('User connected');
 
-const server = http.createServer(app)
-const io = new Server(server,{
-    cors:{
-        origin:"http://localhost:3000",
-    },
-});
+    ws.on('message', async(message: WebSocket.Data) => {
+      const { userId, type, targetUserId, content } = JSON.parse(message.toString());
 
+      if (type === 'register') {
+        userConnections[userId] = ws;
+        console.log(`User ${userId} registered with WebSocket connection.`);
+      }
 
-io.on("connection", (socket)=>{
-    console.log("A user connected",socket.id)
+      if (type === 'sendMessage') {
+        if (userConnections[targetUserId]) {
+          userConnections[targetUserId].send(
+            JSON.stringify({ content, senderId: userId })
+          );
 
-    socket.on("disconnect",()=>{
-        console.log("A user disconnected",socket.id)
-    })
-})
+          const savedMessage = await client.message.create({
+            data:{
+              fromUserId:userId,
+              toUserId:targetUserId,
+              text:content
 
+            }
+          })
+          console.log(`Message sent to ${targetUserId}`);
+          console.log(savedMessage)
 
-export { io,app,server}
+        } else {
+          console.log(`${targetUserId} is offline`);
+        }
+      }
+    });
+
+    ws.on('close', () => {
+      for (const userId in userConnections) {
+        if (userConnections[userId] === ws) {
+          delete userConnections[userId];
+          console.log(`User ${userId} disconnected.`);
+          break;
+        }
+      }
+    });
+
+    ws.on('error', (error: Error) => {
+      console.error('WebSocket error:', error);
+    });
+  });
+
+  console.log('WebSocket server is ready!');
+}
