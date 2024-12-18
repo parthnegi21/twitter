@@ -72,7 +72,7 @@ export default function Profile() {
 const user = async()=>{
   const authtoken = localStorage.getItem("token")
   const username = params?.username
-  const response = await axios.get(`http://localhost:5000/profile/${username}`,{
+  const response = await axios.get(`http://localhost:5000/profile/name/${username}`,{
     headers: {
       Authorization: `Bearer ${authtoken}`,
       "Content-Type": "application/json",

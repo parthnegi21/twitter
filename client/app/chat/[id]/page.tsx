@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 
 
 
-
 interface Users{
     id:any,
     name:String,
@@ -15,16 +14,33 @@ interface Users{
 }
 
 export default function Home() {
-
-  const [loading,setloading]=useState(true)
-
-  
   const router = useRouter()
-   
+
     const [users,setusers]=useState<Users[]>([])
+    const socket = new WebSocket('ws://localhost:8080');
+    socket.onopen = () => {
+      console.log('WebSocket connected');
+      socket.send(JSON.stringify({ type: 'register', userId: 'user123' }));
+    };
+    
+    socket.onmessage = (event) => {
+      console.log('Received:', event.data);
+    };
+    
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+    
+    socket.onclose = () => {
+      console.log('WebSocket closed');
+    };
+
+
+    
+    
 
     useEffect(()=>{
-        setloading(true)
+        
         const chat = async()=>{
             const authtoken = localStorage.getItem("token")
             const response = await axios.get("http://localhost:5000/message/users",{
@@ -35,25 +51,18 @@ export default function Home() {
 
             })
             setusers(response.data) 
-            console.log(response.data)    
-            
-            setloading(false)
+            console.log(response.data)        
              
         }
         chat()
     },[])
-    
-    
-    
 
   return (
    <div className="md:flex justify-center items-center w-full min-h-screen bg-black">
   <div className="text-white w-full sm:flex flex-row">
     <Sidebar />
-      
 
-    <div className={`border-gray-700 border-x-2 ${loading ? "h-screen":"h-full"} sm:basis-11/12 lg:basis-4/12`}>
-    {loading ? (<Loader/>):(<>
+    <div className="border-gray-700 border-x-2 sm:basis-11/12 lg:basis-4/12">
       <div className="text-2xl font-semi bold ml-4 pt-4">Messages</div>
       <div className="flex justify-center mt-4">
         <input
@@ -77,14 +86,13 @@ export default function Home() {
           </div>
         ))}
       </div>
-      </>)} 
     </div>
 
-    <div className="hidden border-r-2  border-gray-700  md:block basis-4/12">
-    <div className="flex justify-center mt-80 text-4xl tracking-tight font-sans font-bold"> Select a message</div>
-    <div className="text-gray-500 flex text-lg font-semibold justify-center w-72 ml-36 mt-2 ">Choose from your existing conversations, start a new one, or just keep swimming.</div>
+    <div className="hidden border-r-2 border-gray-700  md:block basis-4/12">
+    <div className="w-full h-5/6  mt-10"></div>
+    <textarea className="w-full  bg-gray-900 border-2 border-gray-500 rounded-3xl flex text-xl  h-12 pt-2 flex pl-6"  placeholder="Start the Conversation"></textarea>
       </div>
     <div className="hidden basis-1/12"></div>
   </div>
 </div>
-  )}   
+  )}

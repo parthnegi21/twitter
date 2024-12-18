@@ -114,8 +114,8 @@ export default function Home() {
                     fill="currentColor"
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
-                    stroke="currentColor"
-                    className={`cursor-pointer h-6 w-6 ${likedPosts[post.id] ? 'text-red-700' : 'text-gray-500'} border-red-500 rounded-full hover:text-red-500`}
+                    stroke="none"
+                    className={`cursor-pointer h-6 w-6 ${likedPosts[post.id] ? 'text-red-700' : 'text-gray-500'}   hover:text-red-500`}
                   >
                     <path
                       strokeLinecap="round"

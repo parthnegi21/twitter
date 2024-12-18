@@ -9,7 +9,7 @@ import { AuthenticatedRequest } from '../types';
 
 const router = express.Router();
 
-router.get("/:username",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+router.get("/name/:username",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
     const username = req.params.username
 
     const response = await client.user.findUnique({
@@ -21,5 +21,11 @@ router.get("/:username",authMiddleware,async(req:AuthenticatedRequest,res:Respon
 })
 
 
+router.get("/my",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+    const response  = req.user as JwtPayload; 
+
+   
+    res.json(response)
+})
 
 export default router
