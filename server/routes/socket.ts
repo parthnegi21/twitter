@@ -3,7 +3,7 @@ import { Server as HTTPServer } from 'http';
 import client from "../prisma/db"
 
 export function startWebSocketServer(server: HTTPServer) {
-  const userConnections: { [userId: string]: WebSocket } = {};
+  const userConnections: { [userId:string]: WebSocket } = {};
 
   // Create the WebSocket server and bind it to the existing HTTP server
   const wss = new Server({ server });
@@ -29,7 +29,7 @@ export function startWebSocketServer(server: HTTPServer) {
           const savedMessage = await client.message.create({
             data:{
               fromUserId:userId,
-              toUserId:targetUserId,
+              toUserId:parseInt(targetUserId,10) ,
               text:content
 
             }
@@ -39,6 +39,14 @@ export function startWebSocketServer(server: HTTPServer) {
 
         } else {
           console.log(`${targetUserId} is offline`);
+          const offlineMessage = await client.message.create({
+            data:{
+              fromUserId:userId,
+              toUserId:parseInt(targetUserId,10) ,
+              text:content
+            }
+          })
+          console.log(offlineMessage)
         }
       }
     });

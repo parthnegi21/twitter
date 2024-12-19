@@ -34,7 +34,7 @@ function startWebSocketServer(server) {
                     const savedMessage = yield db_1.default.message.create({
                         data: {
                             fromUserId: userId,
-                            toUserId: targetUserId,
+                            toUserId: parseInt(targetUserId, 10),
                             text: content
                         }
                     });
@@ -43,6 +43,14 @@ function startWebSocketServer(server) {
                 }
                 else {
                     console.log(`${targetUserId} is offline`);
+                    const offlineMessage = yield db_1.default.message.create({
+                        data: {
+                            fromUserId: userId,
+                            toUserId: parseInt(targetUserId, 10),
+                            text: content
+                        }
+                    });
+                    console.log(offlineMessage);
                 }
             }
         }));

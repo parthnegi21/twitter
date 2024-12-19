@@ -23,43 +23,38 @@ router.get("/users",authMiddleware,async(req:AuthenticatedRequest,res:Response):
 })
 
 
-router.get("/:id",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+router.get("/send/:id",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
     const {id:toId}=req.params
     const receiverId = parseInt(toId, 10);
     const {id:myId} = req.user as JwtPayload; 
 
     const message = await client.message.findMany({
         where:{
-            OR:[
-                {fromUserId:receiverId,toUserId:myId},
-                {fromUserId:myId,toUserId:receiverId}
-            ]
+            
+            fromUserId:myId,
+            toUserId:receiverId
         }
     })
     res.json(message)
 })
 
-router.post("/send:id",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+
+router.get("/receive/:id",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
     const {id:toId}=req.params
     const receiverId = parseInt(toId, 10);
     const {id:myId} = req.user as JwtPayload; 
-    const text = req.body
 
-    const response = await client.message.create({
-        data:{
-            fromUserId:myId,
-            toUserId:receiverId,
-            text:text
-
+    const message = await client.message.findMany({
+        where:{
+           fromUserId:receiverId,
+           toUserId:myId
         }
-
     })
-    res.json(response)
-}
-)
+    res.json(message)
+})
 
 
-    router.post("/read:id",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+    router.post("/read/:id",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
         const {id:myId} = req.user as JwtPayload; 
         const {id:toId}=req.params
     const receiverId = parseInt(toId, 10);

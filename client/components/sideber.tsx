@@ -4,7 +4,7 @@ export default function Sidebar(){
   const router = useRouter()
     return(
     <div className="justify-center sm:basis-1/12 lg:basis-3/12">
-    <div className="hidden sm:block mt-4 flex font-bold lg:ml-20 text-8xl">Q</div>
+    <div className="hidden sm:block mt-4 flex font-bold lg:ml-20 fixed text-8xl">Q</div>
       <div className="flex sm:block sm:top-40 font-bold text-2xl sm:space-y-10 mt-4 lg:ml-32 fixed bottom-0 w-full sm:w-auto  p-4 justify-around">
       <div className="flex cursor-pointer hover:bg-gray-900 w-12 xl:w-32 h-12 items-center rounded-3xl justify-center">
 <svg   xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="flex font-bold sm:size-9 size-8">

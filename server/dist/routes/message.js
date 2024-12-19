@@ -27,35 +27,31 @@ router.get("/users", auth_1.default, (req, res) => __awaiter(void 0, void 0, voi
     });
     res.json(response);
 }));
-router.get("/:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/send/:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: toId } = req.params;
     const receiverId = parseInt(toId, 10);
     const { id: myId } = req.user;
     const message = yield db_1.default.message.findMany({
         where: {
-            OR: [
-                { fromUserId: receiverId, toUserId: myId },
-                { fromUserId: myId, toUserId: receiverId }
-            ]
+            fromUserId: myId,
+            toUserId: receiverId
         }
     });
     res.json(message);
 }));
-router.post("/send:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/receive/:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: toId } = req.params;
     const receiverId = parseInt(toId, 10);
     const { id: myId } = req.user;
-    const text = req.body;
-    const response = yield db_1.default.message.create({
-        data: {
-            fromUserId: myId,
-            toUserId: receiverId,
-            text: text
+    const message = yield db_1.default.message.findMany({
+        where: {
+            fromUserId: receiverId,
+            toUserId: myId
         }
     });
-    res.json(response);
+    res.json(message);
 }));
-router.post("/read:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/read/:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: myId } = req.user;
     const { id: toId } = req.params;
     const receiverId = parseInt(toId, 10);
