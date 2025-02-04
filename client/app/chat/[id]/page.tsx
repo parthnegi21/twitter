@@ -20,7 +20,8 @@ type Message = {
 export default function Home() {
   const router = useRouter();
   const params = useParams();
-
+  const [loading,setloading]=useState(true)
+  const [messageloading,setmessageloading]=useState(true)
   const [users, setUsers] = useState<User[]>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -29,11 +30,33 @@ export default function Home() {
   const [chatLog, setChatLog] = useState<Message[]>([]);
   const [myChat, setMyChat] = useState<any>([]);
   const [userChat, setUserChat] = useState<any>([]);
-
+  const [user,setuser]=useState<User[]>([]);
   const centerPanelRef = useRef<HTMLDivElement>(null);
   const rightPanelRef = useRef<HTMLDivElement>(null);
 
-  // Initialize WebSocket connection
+   
+  useEffect(()=>{
+    setloading(true)
+    const chat = async()=>{
+        const authtoken = localStorage.getItem("token")
+        const response = await axios.get("http://localhost:5000/message/users",{
+            headers: {
+                Authorization: `Bearer ${authtoken}`,
+                "Content-Type": "application/json",
+              },
+
+        })
+        setuser(response.data) 
+        console.log(response.data)    
+        
+        setloading(false)
+         
+    }
+    chat()
+},[])
+
+
+  
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:5000");
     setWs(socket);
@@ -42,6 +65,11 @@ export default function Home() {
       const { senderId, content }: Message = JSON.parse(event.data);
       setChatLog((prevLog) => [...prevLog, { senderId, content }]);
     };
+    
+    socket.onopen = () => {
+      console.log("WebSocket connection established");
+    };
+
 
     socket.onclose = () => {
       console.log("WebSocket connection closed");
@@ -81,7 +109,7 @@ export default function Home() {
       console.log(`Registered as ${userId}`);
     }
   }
- 
+ 66666
   }, [userId, ws]);
 
   // Handle sending a message
@@ -107,6 +135,7 @@ export default function Home() {
   // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
+      setmessageloading(true)
       const authtoken = localStorage.getItem("token");
       const response = await axios.get("http://localhost:5000/message/users", {
         headers: {
@@ -115,11 +144,12 @@ export default function Home() {
         },
       });
       setUsers(response.data);
+      setmessageloading(false)
     };
     fetchUsers();
   }, []);
 
-  // Fetch messages sent by the current user
+  
   useEffect(() => {
     const fetchMyMessages = async () => {
       const authtoken = localStorage.getItem("token");
@@ -135,7 +165,7 @@ export default function Home() {
     fetchMyMessages();
   }, [userId]);
 
-  // Fetch messages received by the current user
+
   useEffect(() => {
     const fetchUserMessages = async () => {
       const authtoken = localStorage.getItem("token");
@@ -151,7 +181,7 @@ export default function Home() {
     fetchUserMessages();
   }, [userId]);
 
-  // Handle dynamic scrolling
+  
   const handleMouseMove = (e: React.MouseEvent) => {
     const { clientX } = e;
     const screenWidth = window.innerWidth;
@@ -167,18 +197,19 @@ export default function Home() {
 
   return (
     <div
-      className="md:flex justify-center items-center w-full min-h-screen bg-black"
+      className="md:flex  justify-center items-center w-full min-h-screen bg-black"
       onMouseMove={handleMouseMove}
     >
-      <div className="text-white w-full sm:flex flex-row">
+      <div className="   text-white w-full sm:flex flex-row">
         <Sidebar />
 
-        {/* Center Panel (User List) */}
+        
         <div
           id="center-panel"
           ref={centerPanelRef}
-          className="border-gray-700 border-x-2 sm:basis-11/12 lg:basis-4/12 max-h-screen overflow-auto"
+          className="border-gray-700 hidden sm:block border-x-2 sm:basis-11/12 lg:basis-4/12 max-h-screen overflow-auto"
         >
+          {loading ?<Loader/>:(<>
           <div className="text-2xl font-semibold ml-4 pt-4">Messages</div>
           <div className="flex justify-center mt-4">
             <input
@@ -205,24 +236,45 @@ export default function Home() {
               </div>
             ))}
           </div>
+          </>)}
         </div>
-
+        
        
         <div
   id="right-panel"
   ref={rightPanelRef}
   className="hidden border-r-2 border-gray-700 md:block basis-4/12 max-h-screen overflow-auto"
 >
-  <div className="w-full h-5/6 mt-10">
-    {[...userChat, ...myChat, ...chatLog]
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-      .map((message, index) => (
-        <div key={index} className="p-2">
-          {message.fromUserId === userId || message.senderId === userId ? "You: " : "Friend: "}
-          {message.text || message.content}
-        </div>
-      ))}
-  </div>
+
+<div className="w-full  sm:h-5/6 mt-10 overflow-auto flex flex-col">
+{loading ? <Loader/> :(<> 
+  {userId &&
+    
+    [...myChat, ...userChat, ...chatLog]
+      .map((msg) => ({
+        ...msg,
+        timestamp: msg.createdAt
+          ? new Date(msg.createdAt).getTime() 
+          : Date.now(), 
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp) 
+      .map((message, index) => {
+
+        const isMyMessage = message.senderId === userId || message.fromUserId === userId;
+        return (
+          <div
+            key={index}
+            className={`p-2 my-1 mx-4 w-fit max-w-[75%] rounded-lg text-white ${
+              isMyMessage ? "bg-blue-500 ml-auto text-right" : "bg-gray-800 mr-auto text-left"
+            }`}
+          >
+            {message.content || message.text} 
+          </div>
+        );
+      })}
+      </>)}
+</div>
+
 
   <div className="flex">
     <textarea
