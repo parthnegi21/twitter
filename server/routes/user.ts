@@ -9,16 +9,6 @@ import { AuthenticatedRequest } from '../types';
 
 const router = express.Router();
 
-router.get("/name/:username",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
-    const username = req.params.username
-
-    const response = await client.user.findUnique({
-        where:{
-            username
-        }
-    })
-    res.json(response)
-})
 
 
 router.get("/my",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
@@ -27,5 +17,30 @@ router.get("/my",authMiddleware,async(req:AuthenticatedRequest,res:Response):Pro
    
     res.json(response)
 })
+
+router.get("/search/:term", authMiddleware, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const searchTerm = req.params.term;
+
+    const users = await client.user.findMany({
+        where: {
+            OR: [
+                {
+                    username: {
+                        startsWith: searchTerm,
+                        mode: 'insensitive' // Makes the search case-insensitive
+                    }
+                },
+                {
+                    name: {
+                        startsWith: searchTerm,
+                        mode: 'insensitive'
+                    }
+                }
+            ]
+        }
+    });
+
+    res.json(users);
+});
 
 export default router
