@@ -18,7 +18,9 @@ export default function Sidebar(){
 
 
 
-<div className="flex cursor-pointer hover:bg-gray-900 w-12 xl:w-32 h-12  items-center rounded-3xl justify-center">
+<div onClick={()=>{
+  router.push("/search")
+}} className="flex cursor-pointer hover:bg-gray-900 w-12 xl:w-32 h-12  items-center rounded-3xl justify-center">
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="sm:size-9  size-8">
 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
 </svg>

@@ -87,7 +87,27 @@ export default function Home() {
             </div>
           </div>
 
-         
+
+
+
+          <div className="w-full flex flex-col  border-b-2 border-gray-700 ">
+            <div className="text-blue-300 ml-10 border-gray-700 border w-24 flex justify-center rounded-3xl mt-4 font-semibold">Everyone</div>
+            <div className="flex  justify-center ">
+
+          <textarea className="bg-black text-xl w-5/6 pb-4 flex justify-center outline-none border-b-2 border-gray-700 mt-4 resize-none overflow-hidden"  rows={1}
+  onInput={(e) => {
+    e.currentTarget.style.height = "auto"; 
+    e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`; 
+  }}  placeholder="Type your Thoughts"></textarea>
+          </div>
+          <button className="bg-gray-500 text-black w-20 hover:bg-white flex justify-center text-xl  rounded-3xl mt-2 font-semibold h-9 cursor-pointer items-center ml-auto mr-4 mb-2">Post</button>
+          </div>
+          <div className="w-full h-12 border-b-2 border-gray-700"></div>
+
+
+
+
+
 
           <div>
             {loading ? (<Loader/>):(<>
@@ -96,7 +116,7 @@ export default function Home() {
                 <div className="flex cursor-pointer" onClick={()=>{
                   router.push(`/profile/${post.username}`)
                 }}>
-                  <div className="h-10 w-10 border-2 border-gray-700 rounded-full flex justify-center font-semibold items-center mt-1">
+                  <div className="h-10 w-10 border-2 border-gray-700  rounded-full flex justify-center font-semibold items-center mt-1">
                     {post.name[0].toUpperCase()}
                   </div>
                   <div className="flex mt-2 ml-2">
