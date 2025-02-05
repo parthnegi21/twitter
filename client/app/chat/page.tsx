@@ -52,7 +52,7 @@ export default function Home() {
     <Sidebar />
       
 
-    <div className={`border-gray-700 border-x-2 ${loading ? "h-screen":"h-full"} sm:basis-11/12 lg:basis-4/12`}>
+    <div className={`border-gray-700 border-x-2 ${loading ? "h-screen":"h-full"} pb-16  sm:pb-0 sm:basis-11/12 lg:basis-4/12`}>
     {loading ? (<Loader/>):(<>
       <div className="text-2xl font-semi bold ml-4 pt-4">Messages</div>
       <div className="flex justify-center mt-4">

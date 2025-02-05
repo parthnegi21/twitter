@@ -5,6 +5,7 @@ import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
+import Tick from "@/components/tick";
 
 interface User {
   id: string;
@@ -200,10 +201,20 @@ export default function Home() {
       className="md:flex  justify-center items-center w-full min-h-screen bg-black"
       onMouseMove={handleMouseMove}
     >
-      <div className="   text-white w-full sm:flex flex-row">
-        <Sidebar />
-
+      <div onClick={()=>{
+        router.push("/chat")
+    }} className="h-10 pt-8  bg-black w-full sm:hidden pl-10"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-8 cursor-pointer text-white">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+</svg>
+</div>
+      <div className="text-white w-full flex flex-col sm:flex-row">
+      <div className="hidden sm:block sm:basis-1/12 lg:basis-3/12">
+          <Sidebar/>
+        </div>
+      
+       
         
+
         <div
           id="center-panel"
           ref={centerPanelRef}
@@ -239,67 +250,64 @@ export default function Home() {
           </>)}
         </div>
         
-       
         <div
-  id="right-panel"
-  ref={rightPanelRef}
-  className="hidden border-r-2 border-gray-700 md:block basis-4/12 max-h-screen overflow-auto"
->
+          id="right-panel"
+          ref={rightPanelRef}
+          className="block border-r-2 border-gray-700 md:basis-4/12 max-h-screen relative"
+        >
+          <div className="w-full h-[calc(100vh-70px)]  pb-14 mt-10 overflow-auto flex flex-col">
+            {loading ? <Loader/> :(<> 
+              {userId &&
+                
+                [...myChat, ...userChat, ...chatLog]
+                  .map((msg) => ({
+                    ...msg,
+                    timestamp: msg.createdAt
+                      ? new Date(msg.createdAt).getTime() 
+                      : Date.now(), 
+                  }))
+                  .sort((a, b) => a.timestamp - b.timestamp) 
+                  .map((message, index) => {
 
-<div className="w-full  sm:h-5/6 mt-10 overflow-auto flex flex-col">
-{loading ? <Loader/> :(<> 
-  {userId &&
-    
-    [...myChat, ...userChat, ...chatLog]
-      .map((msg) => ({
-        ...msg,
-        timestamp: msg.createdAt
-          ? new Date(msg.createdAt).getTime() 
-          : Date.now(), 
-      }))
-      .sort((a, b) => a.timestamp - b.timestamp) 
-      .map((message, index) => {
-
-        const isMyMessage = message.senderId === userId || message.fromUserId === userId;
-        return (
-          <div
-            key={index}
-            className={`p-2 my-1 mx-4 w-fit max-w-[75%] rounded-lg text-white ${
-              isMyMessage ? "bg-blue-500 ml-auto text-right" : "bg-gray-800 mr-auto text-left"
-            }`}
-          >
-            {message.content || message.text} 
+                    const isMyMessage = message.senderId === userId || message.fromUserId === userId;
+                    return (
+                      <div
+                        key={index}
+                        className={`p-2 my-1 mx-4 w-fit max-w-[75%] rounded-lg text-white ${
+                          isMyMessage ? "bg-blue-500 ml-auto text-right" : "bg-gray-800 mr-auto text-left"
+                        }`}
+                      >
+                        {message.content || message.text} 
+                      </div>
+                    );
+                  })}
+                  </>)}
           </div>
-        );
-      })}
-      </>)}
-</div>
 
-
-  <div className="flex">
-    <textarea
-      className="w-5/6 ml-10 flex bg-gray-900 border-2 border-gray-500 rounded-3xl text-xl h-12 pt-2 pl-6"
-      placeholder="Start the Conversation"
-      value={message}
-      onChange={(e) => setMessage(e.target.value)}
-    />
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      onClick={handleSendMessage}
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className="size-8 ml-2 cursor-pointer mt-2 text-blue-500 flex"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-      />
-    </svg>
-  </div>
-</div>
+          <div className="flex absolute bottom-0 w-full bg-black  pt-2">
+            <textarea
+              className="w-5/6 ml-6 sm:mb-8 flex bg-gray-900 border-2 border-gray-500 rounded-3xl text-xl h-12 pt-2 pl-6"
+              placeholder="Start the Conversation"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              onClick={handleSendMessage}
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-8 ml-2 cursor-pointer mt-2 text-blue-500 flex"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+              />
+            </svg>
+          </div>
+        </div>
 
       </div>
     </div>
