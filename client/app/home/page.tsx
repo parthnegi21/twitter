@@ -19,6 +19,7 @@ export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
   const [loading,setloading]=useState(true)
+  const [content,setContent]=useState("")
 
   useEffect(() => {
     setloading(true)
@@ -94,13 +95,27 @@ export default function Home() {
             <div className="text-blue-300 ml-10 border-gray-700 border w-24 flex justify-center rounded-3xl mt-4 font-semibold">Everyone</div>
             <div className="flex  justify-center ">
 
-          <textarea className="bg-black text-xl w-5/6 pb-4 flex justify-center outline-none border-b-2 border-gray-700 mt-4 resize-none overflow-hidden"  rows={1}
+          <textarea onChange={(e)=>(setContent(e.target.value))} className="bg-black text-xl w-5/6 pb-4 flex justify-center outline-none border-b-2 border-gray-700 mt-4 resize-none overflow-hidden"  rows={1}
   onInput={(e) => {
     e.currentTarget.style.height = "auto"; 
     e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`; 
   }}  placeholder="Type your Thoughts"></textarea>
           </div>
-          <button className="bg-gray-500 text-black w-20 hover:bg-white flex justify-center text-xl  rounded-3xl mt-2 font-semibold h-9 cursor-pointer items-center ml-auto mr-4 mb-2">Post</button>
+          
+          <button onClick={async()=>{
+            const authtoken =localStorage.getItem("token")
+            console.log(content)
+           if (content.length>0){
+            const response = await axios.post("http://localhost/post/post",{
+              headers:{
+                "Authorization": `Bearer ${authtoken}`
+                
+              },
+              content:content
+            })
+            console.log(response.data)
+          }
+          }} className="bg-gray-500 text-black w-20 hover:bg-white flex justify-center text-xl  rounded-3xl mt-2 font-semibold h-9 cursor-pointer items-center ml-auto mr-4 mb-2">Post</button>
           </div>
           <div className="w-full h-12 border-b-2 border-gray-700"></div>
 
