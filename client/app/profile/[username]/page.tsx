@@ -3,13 +3,14 @@ import Loader from "@/components/loading";
 import Sidebar from "@/components/sideber";
 import axios from "axios";
 import { setLazyProp } from "next/dist/server/api-utils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 
 interface Post {
   id: number;
   authorId: number;
   content: string;
+  imageUrl?: string;
   createdAt: string;
   name: string;
   username: string;
@@ -37,11 +38,15 @@ export default function Profile() {
   const [postloading,setpostloading]=useState(true)
   const[followed,setfollowed]=useState(true)
   const [textfollow,settextfollow]=useState("Follow")
-
-
-  
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     setpostloading(true)
     const fetchPosts = async () => {
       const authtoken = localStorage.getItem("token");
@@ -55,7 +60,12 @@ export default function Profile() {
           },
         });
 
-        setPosts(response.data);
+        // Sort posts by date, newest first
+        const sortedPosts = response.data.sort((a: Post, b: Post) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+
+        setPosts(sortedPosts);
        
       
         
@@ -65,7 +75,7 @@ export default function Profile() {
     };
 
     fetchPosts();
-  }, []);
+  }, [mounted, params?.username]);
 
 
   useEffect(()=>{
@@ -164,7 +174,7 @@ user()
 
   const handleLike = async (postId: number, authorId: number) => {
     const authtoken = localStorage.getItem("token");
-   
+    try {
       const response = await axios.post(
         "http://localhost:5000/react/like",
         { postId, authorId },
@@ -180,8 +190,12 @@ user()
       } else {
         setLikedPosts((prev) => ({ ...prev, [postId]: false }));
       }
-    
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="md:flex justify-center items-center w-full h-screen bg-black">
@@ -238,7 +252,7 @@ user()
               <div key={post.id} className="pt-2 pl-4 w-full border-b-2 border-gray-700 overflow-auto pb-4">
                 <div className="flex">
                   <div className="h-10 w-10 border-2 border-gray-700 rounded-full flex justify-center font-semibold items-center mt-1">
-                    {post.name[0].toUpperCase()}
+                    {post.name && post.name[0] ? post.name[0].toUpperCase() : '?'}
                   </div>
                   <div className="flex mt-2 ml-2">
                     <div className="flex font-semibold text-lg">{post.name}</div>
@@ -248,6 +262,16 @@ user()
                 </div>
                 <div className="ml-16 text-gray-300">{post.content}</div>
 
+                {post.imageUrl && (
+                  <div className="mt-4 flex justify-center">
+                    <img 
+                      src={post.imageUrl} 
+                      alt="Post image" 
+                      className="max-h-96 rounded-xl object-contain"
+                    />
+                  </div>
+                )}
+
                 <div className="flex justify-between px-10 cursor-pointer pt-4">
                   <svg
                     onClick={() => handleLike(post.id, post.authorId)}
@@ -255,8 +279,8 @@ user()
                     fill="currentColor"
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
-                    stroke="currentColor"
-                    className={`cursor-pointer h-6 w-6 ${likedPosts[post.id] ? 'text-red-700' : 'text-gray-500'} border-red-500 rounded-full hover:text-red-500`}
+                    stroke="none"
+                    className={`cursor-pointer h-6 w-6 ${likedPosts[post.id] ? 'text-red-700' : 'text-gray-500'} hover:text-red-500`}
                   >
                     <path
                       strokeLinecap="round"

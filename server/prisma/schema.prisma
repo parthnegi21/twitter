@@ -32,6 +32,7 @@ model Post {
   createdAt DateTime  @default(now())
   likes     Like[]    
   comments  Comment[] 
+  imageUrl  String?
 }
 
 model Connection {

@@ -24,6 +24,7 @@ router.post('/post', auth_1.default, (req, res) => __awaiter(void 0, void 0, voi
     const response = yield db_1.default.post.create({
         data: {
             content: req.body.content,
+            imageUrl: req.body.imageUrl,
             username,
             name,
             authorId: id,
@@ -67,13 +68,7 @@ router.delete("/delete", auth_1.default, (req, res) => __awaiter(void 0, void 0,
 }));
 router.get("/bulk", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: authorId } = req.user;
-    const response = yield db_1.default.post.findMany({
-        where: {
-            authorId: {
-                not: authorId,
-            },
-        },
-    });
+    const response = yield db_1.default.post.findMany({});
     if (response.length == 0) {
         res.json({ msg: "no post found" });
     }

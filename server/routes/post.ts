@@ -22,6 +22,7 @@ router.post('/post', authMiddleware, async (req: AuthenticatedRequest, res: Resp
   const response = await client.post.create({
     data: {
      content:req.body.content,
+     imageUrl:req.body.imageUrl,
       username,
       name,
       authorId: id,
@@ -99,11 +100,7 @@ const {id:authorId} = req.user as JwtPayload;
 
 
 const response = await client.post.findMany({
-  where: {
-   authorId: {
-      not: authorId,
-    },
-  },
+  
 });
 
 if(response.length==0){
