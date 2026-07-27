@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 
 
 
-interface Users{
-    id:any,
-    name:String,
-    username:String
+interface Users {
+  id: number;
+  name: string;
+  username: string;
 }
 
 export default function Home() {
@@ -47,14 +47,13 @@ export default function Home() {
     
 
   return (
-   <div className="md:flex justify-center items-center w-full min-h-screen bg-black">
-  <div className="text-white w-full sm:flex flex-row">
-    <Sidebar />
-      
+    <div className="min-h-screen bg-black">
+      <div className="mx-auto flex w-full flex-col md:flex-row text-white">
+        <Sidebar />
 
-    <div className={`border-gray-700 border-x-2 ${loading ? "h-screen":"h-full"} pb-16  sm:pb-0 sm:basis-11/12 lg:basis-4/12`}>
+        <div className={`border-gray-700 border-x-2 ${loading ? "min-h-screen":"min-h-full"} pb-16 sm:pb-0 md:basis-7/12 lg:basis-6/12`}>
     {loading ? (<Loader/>):(<>
-      <div className="text-2xl font-semi bold ml-4 pt-4">Messages</div>
+      <div className="text-2xl font-semibold ml-4 pt-4">Messages</div>
       <div className="flex justify-center mt-4">
         <input
           className="bg-black border-2 border-gray-700 w-96 h-10 rounded-3xl text-lg pl-4"
@@ -80,11 +79,10 @@ export default function Home() {
       </>)} 
     </div>
 
-    <div className="hidden border-r-2  border-gray-700  md:block basis-4/12">
+    <div className="hidden md:block md:basis-4/12 border-r-2 border-gray-700 px-8 py-10">
     <div className="flex justify-center mt-80 text-4xl tracking-tight font-sans font-bold"> Select a message</div>
-    <div className="text-gray-500 flex text-lg font-semibold justify-center w-72 ml-36 mt-2 ">Choose from your existing conversations, start a new one, or just keep swimming.</div>
+    <div className="text-gray-500 text-lg font-semibold text-center mt-6">Choose from your existing conversations, start a new one, or just keep swimming.</div>
       </div>
-    <div className="hidden basis-1/12"></div>
   </div>
 </div>
   )}   

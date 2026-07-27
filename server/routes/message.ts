@@ -1,4 +1,4 @@
-import express, { response, Response } from 'express';
+import express, { Response } from 'express';
 import client from '../prisma/db';
 import authMiddleware from "../middleware/auth";
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -25,7 +25,7 @@ router.get("/users",authMiddleware,async(req:AuthenticatedRequest,res:Response):
 
 router.get("/send/:id",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
     const {id:toId}=req.params
-    const receiverId = parseInt(toId, 10);
+    const receiverId = parseInt(Array.isArray(toId) ? toId[0] : toId, 10);
     const {id:myId} = req.user as JwtPayload; 
 
     const message = await client.message.findMany({
@@ -41,7 +41,7 @@ router.get("/send/:id",authMiddleware,async(req:AuthenticatedRequest,res:Respons
 
 router.get("/receive/:id",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
     const {id:toId}=req.params
-    const receiverId = parseInt(toId, 10);
+    const receiverId = parseInt(Array.isArray(toId) ? toId[0] : toId, 10);
     const {id:myId} = req.user as JwtPayload; 
 
     const message = await client.message.findMany({
@@ -54,10 +54,10 @@ router.get("/receive/:id",authMiddleware,async(req:AuthenticatedRequest,res:Resp
 })
 
 
-    router.post("/read/:id",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{
+    router.post("/read/:id",authMiddleware,async(req:AuthenticatedRequest,res:Response):Promise<void>=>{        
         const {id:myId} = req.user as JwtPayload; 
         const {id:toId}=req.params
-    const receiverId = parseInt(toId, 10);
+    const receiverId = parseInt(Array.isArray(toId) ? toId[0] : toId, 10);
         const readMessage = await client.message.updateMany({
             where:{
                 fromUserId:myId,

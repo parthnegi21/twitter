@@ -29,7 +29,7 @@ router.get("/users", auth_1.default, (req, res) => __awaiter(void 0, void 0, voi
 }));
 router.get("/send/:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: toId } = req.params;
-    const receiverId = parseInt(toId, 10);
+    const receiverId = parseInt(Array.isArray(toId) ? toId[0] : toId, 10);
     const { id: myId } = req.user;
     const message = yield db_1.default.message.findMany({
         where: {
@@ -41,7 +41,7 @@ router.get("/send/:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, 
 }));
 router.get("/receive/:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: toId } = req.params;
-    const receiverId = parseInt(toId, 10);
+    const receiverId = parseInt(Array.isArray(toId) ? toId[0] : toId, 10);
     const { id: myId } = req.user;
     const message = yield db_1.default.message.findMany({
         where: {
@@ -54,7 +54,7 @@ router.get("/receive/:id", auth_1.default, (req, res) => __awaiter(void 0, void 
 router.post("/read/:id", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: myId } = req.user;
     const { id: toId } = req.params;
-    const receiverId = parseInt(toId, 10);
+    const receiverId = parseInt(Array.isArray(toId) ? toId[0] : toId, 10);
     const readMessage = yield db_1.default.message.updateMany({
         where: {
             fromUserId: myId,

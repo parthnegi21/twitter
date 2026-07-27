@@ -5,7 +5,6 @@ import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import Tick from "@/components/tick";
 
 interface User {
   id: string;
@@ -18,46 +17,31 @@ type Message = {
   content: string;
 };
 
+type ChatMessage = {
+  senderId?: string | number;
+  fromUserId?: number;
+  content?: string;
+  text?: string;
+  createdAt?: string;
+  timestamp?: number;
+};
+
 export default function Home() {
   const router = useRouter();
   const params = useParams();
-  const [loading,setloading]=useState(true)
-  const [messageloading,setmessageloading]=useState(true)
+  const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<User[]>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const id = params?.id;
   const [message, setMessage] = useState<string>("");
-  const [chatLog, setChatLog] = useState<Message[]>([]);
-  const [myChat, setMyChat] = useState<any>([]);
-  const [userChat, setUserChat] = useState<any>([]);
-  const [user,setuser]=useState<User[]>([]);
+  const [chatLog, setChatLog] = useState<ChatMessage[]>([]);
+  const [myChat, setMyChat] = useState<ChatMessage[]>([]);
+  const [userChat, setUserChat] = useState<ChatMessage[]>([]);
   const centerPanelRef = useRef<HTMLDivElement>(null);
   const rightPanelRef = useRef<HTMLDivElement>(null);
 
-   
-  useEffect(()=>{
-    setloading(true)
-    const chat = async()=>{
-        const authtoken = localStorage.getItem("token")
-        const response = await axios.get("http://localhost:5000/message/users",{
-            headers: {
-                Authorization: `Bearer ${authtoken}`,
-                "Content-Type": "application/json",
-              },
 
-        })
-        setuser(response.data) 
-        console.log(response.data)    
-        
-        setloading(false)
-         
-    }
-    chat()
-},[])
-
-
-  
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:5000");
     setWs(socket);
@@ -92,25 +76,24 @@ export default function Home() {
           "Content-Type": "application/json",
         },
       });
-      setUserId(response.data.id);
+      setUserId(String(response.data.id));
     };
+
     fetchUserProfile();
   }, []);
 
   // Register the user on WebSocket connection
   useEffect(() => {
-    if (ws && userId) {
-      if(ws.readyState == WebSocket.OPEN){
+    if (!ws || !userId) return;
+    if (ws.readyState === WebSocket.OPEN) {
       ws.send(
         JSON.stringify({
           type: "register",
-          userId: userId,
+          userId,
         })
       );
       console.log(`Registered as ${userId}`);
     }
-  }
- 66666
   }, [userId, ws]);
 
   // Handle sending a message
@@ -136,7 +119,7 @@ export default function Home() {
   // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
-      setmessageloading(true)
+      setLoading(true);
       const authtoken = localStorage.getItem("token");
       const response = await axios.get("http://localhost:5000/message/users", {
         headers: {
@@ -145,13 +128,15 @@ export default function Home() {
         },
       });
       setUsers(response.data);
-      setmessageloading(false)
+      setLoading(false);
     };
     fetchUsers();
   }, []);
 
   
   useEffect(() => {
+    if (!id) return;
+
     const fetchMyMessages = async () => {
       const authtoken = localStorage.getItem("token");
       const response = await axios.get(`http://localhost:5000/message/send/${id}`, {
@@ -160,14 +145,15 @@ export default function Home() {
           "Content-Type": "application/json",
         },
       });
-      console.log(response.data)
       setMyChat(response.data);
     };
     fetchMyMessages();
-  }, [userId]);
+  }, [id, userId]);
 
 
   useEffect(() => {
+    if (!id) return;
+
     const fetchUserMessages = async () => {
       const authtoken = localStorage.getItem("token");
       const response = await axios.get(`http://localhost:5000/message/receive/${id}`, {
@@ -176,11 +162,10 @@ export default function Home() {
           "Content-Type": "application/json",
         },
       });
-      console.log(response.data)
       setUserChat(response.data);
     };
     fetchUserMessages();
-  }, [userId]);
+  }, [id, userId]);
 
   
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -268,16 +253,29 @@ export default function Home() {
                   }))
                   .sort((a, b) => a.timestamp - b.timestamp) 
                   .map((message, index) => {
+                    const normalizedUserId = String(userId);
+                    const isMyMessage =
+                      normalizedUserId &&
+                      (String(message.senderId) === normalizedUserId ||
+                        String(message.fromUserId) === normalizedUserId);
 
-                    const isMyMessage = message.senderId === userId || message.fromUserId === userId;
                     return (
-                      <div
-                        key={index}
-                        className={`p-2 my-1 mx-4 w-fit max-w-[75%] rounded-lg text-white ${
-                          isMyMessage ? "bg-blue-500 ml-auto text-right" : "bg-gray-800 mr-auto text-left"
-                        }`}
-                      >
-                        {message.content || message.text} 
+                      <div key={index} className={`flex my-2 mx-4 ${isMyMessage ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`flex flex-col ${isMyMessage ? 'items-end' : 'items-start'}`}>
+                          <div
+                            className={`p-3 w-fit max-w-[78%] text-white break-words ${isMyMessage ? 'text-right rounded-tl-2xl rounded-bl-2xl rounded-tr-lg' : 'text-left rounded-tr-2xl rounded-br-2xl rounded-tl-lg'}`}
+                            style={{
+                              backgroundColor: isMyMessage ? '#3b82f6' : '#475569',
+                              color: '#ffffff',
+                            }}
+                          >
+                            {message.content || message.text}
+                          </div>
+
+                          <div className={`text-xs mt-1 ${isMyMessage ? 'text-gray-200 text-right' : 'text-gray-300 text-left'}`}>
+                            {new Date(message.timestamp || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+                          </div>
+                        </div>
                       </div>
                     );
                   })}

@@ -27,9 +27,12 @@ export async function signup(email: string, name: string, password: string,usern
       },
     });
 
-    console.log(user)
+    
 
-    const token = jwt.sign(user, JWT_SECRET);
+    const token = jwt.sign(
+      { id: user.id, name: user.name, email: user.email, username: user.username },
+      JWT_SECRET
+    );
 
     return { msg: "Signed up successfully", token };
   } catch (error) {

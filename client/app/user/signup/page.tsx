@@ -45,9 +45,12 @@ export default function Signup(){
 <div className="flex justify-center md:mt-20 mt-40">
     <button onClick={async()=>{
         const response = await signup(email,name,password,username)
-        localStorage.setItem("token",response.token ??"")
-        console.log(response)
-
+        if (response.token) {
+          localStorage.setItem("token", response.token)
+          router.push("/home")
+        } else {
+          alert(response.msg)
+        }
     }} className="bg-white w-9/12 h-12 rounded-3xl text-2xl font-semibold">Next</button>
     
 </div>

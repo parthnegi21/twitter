@@ -20,6 +20,7 @@ model User {
   comments        Comment[]    
   messagesSent  Message[] @relation("SentMessages")
   messagesReceived  Message[] @relation("ReceivedMessages") 
+  bookmarks Bookmark[]
 }
 
 model Post {
@@ -33,6 +34,8 @@ model Post {
   likes     Like[]    
   comments  Comment[] 
   imageUrl  String?
+  bookmarks Bookmark[]
+
 }
 
 model Connection {
@@ -81,3 +84,12 @@ model Message{
   createdAt  DateTime  @default(now())
 }
 
+model Bookmark {
+  id Int @id @default(autoincrement())
+  userId Int
+  postId Int
+  user User @relation(fields: [userId],references: [id])
+  post Post @relation(fields: [postId],references: [id])
+  
+
+}

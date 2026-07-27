@@ -19,8 +19,9 @@ export default function Home() {
   const router = useRouter()
   const [posts, setPosts] = useState<Post[]>([]);
   const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
-  const [loading,setloading]=useState(true)
-  const [content,setContent]=useState("")
+  const [bookmarkedPosts, setBookmarkedPosts] = useState<{ [key: number]: boolean }>({});
+  const [loading, setLoading] = useState(true)
+  const [content, setContent] = useState("")
   const [imageUrl, setImageUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -64,7 +65,7 @@ export default function Home() {
     if (!mounted) return;
 
     const fetchPosts = async () => {
-      setloading(true);
+      setLoading(true);
       const authtoken = localStorage.getItem("token");
 
       try {
@@ -83,7 +84,7 @@ export default function Home() {
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
-      setloading(false);
+      setLoading(false);
     };
 
     fetchPosts();
@@ -112,6 +113,29 @@ export default function Home() {
     }
   };
 
+  const handleBookmark = async (postId: number) => {
+    const authtoken = localStorage.getItem("token");
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/post/bookmark",
+        { postId },
+        {
+          headers: {
+            Authorization: `Bearer ${authtoken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.data.msg === "Bookmark added") {
+        setBookmarkedPosts((prev) => ({ ...prev, [postId]: true }));
+      } else {
+        setBookmarkedPosts((prev) => ({ ...prev, [postId]: false }));
+      }
+    } catch (error) {
+      console.error("Error bookmarking post:", error);
+    }
+  };
+
   const handlePost = async () => {
     try {
       const authtoken = localStorage.getItem("token");
@@ -131,8 +155,8 @@ export default function Home() {
         }
       );
       
-      const newPost = response.data;
-      if (!newPost.name) {
+      const newPost = response.data.data;
+      if (!newPost?.name) {
         throw new Error("Post data is incomplete");
       }
       
@@ -249,18 +273,25 @@ export default function Home() {
             {loading ? (<Loader/>):(<>
             {posts.map((post) => (
               <div key={post.id} className="pt-2 pl-4 w-full border-b-2 border-gray-700 overflow-auto pb-4">
-                <div className="flex cursor-pointer" onClick={()=>{
+                <div className="flex">
+                <div className="flex cursor-pointer w-96" onClick={()=>{
                   router.push(`/profile/${post.username}`)
                 }}>
                   <div className="h-10 w-10 border-2 border-gray-700  rounded-full flex justify-center font-semibold items-center mt-1">
-                    {post.name[0].toUpperCase()}
+                    {post.name && post.name.length > 0 ? post.name[0].toUpperCase() : 'U'}
                   </div>
                   <div className="flex mt-2 ml-2">
                     <div className="flex font-semibold text-lg">{post.name}</div>
                     <div className="flex text-sm font-semibold text-blue-300 sm:h-8 h-7 items-center ml-2">{post.username}</div>
                     <div className="ml-2 mt-2 text-gray-500 text-xs">{post.createdAt}</div>
-                  </div>
+            
+
+                
                 </div>
+                </div>
+                <svg  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-7 text-gray-300 cursor-pointer ml-auto mt-2  justify-end flex">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+</svg></div>
                 <div className="ml-16 text-gray-300">{post.content}</div>
 
                 {post.imageUrl && (
@@ -304,12 +335,13 @@ export default function Home() {
                     />
                   </svg>
                   <svg
+                    onClick={() => handleBookmark(post.id)}
                     xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
+                    fill={bookmarkedPosts[post.id] ? "currentColor" : "none"}
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="flex cursor-pointer h-6 w-6 text-gray-500 hover:text-white"
+                    className={`flex cursor-pointer h-6 w-6 ${bookmarkedPosts[post.id] ? 'text-blue-400' : 'text-gray-500'} hover:text-white`}
                   >
                     <path
                       strokeLinecap="round"

@@ -17,7 +17,8 @@ const db_1 = __importDefault(require("../prisma/db"));
 const auth_1 = __importDefault(require("../middleware/auth"));
 const router = express_1.default.Router();
 router.get("/name/:username", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const username = req.params.username;
+    const usernameParam = req.params.username;
+    const username = Array.isArray(usernameParam) ? usernameParam[0] : usernameParam;
     const response = yield db_1.default.user.findUnique({
         where: {
             username
@@ -30,7 +31,8 @@ router.get("/my", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0
     res.json(response);
 }));
 router.get("/search/:term", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const searchTerm = req.params.term;
+    const termParam = req.params.term;
+    const searchTerm = Array.isArray(termParam) ? termParam[0] : termParam;
     const users = yield db_1.default.user.findMany({
         where: {
             OR: [

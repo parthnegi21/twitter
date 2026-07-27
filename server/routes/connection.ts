@@ -1,4 +1,4 @@
-import express, { response, Response } from 'express';
+import express, { Response } from 'express';
 import client from '../prisma/db';
 import authMiddleware from "../middleware/auth";
 import jwt, { JwtPayload } from 'jsonwebtoken';

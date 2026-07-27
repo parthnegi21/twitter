@@ -2,7 +2,6 @@
 import Loader from "@/components/loading";
 import Sidebar from "@/components/sideber";
 import axios from "axios";
-import { setLazyProp } from "next/dist/server/api-utils";
 import { useState, useEffect, useRef } from "react";
 
 interface Post {
@@ -15,23 +14,23 @@ interface Post {
   username: string;
 }
 
-type Userdata ={
-  name:String,
-  username:String
-}
+type Userdata = {
+  name: string;
+  username: string;
+};
 
-type count ={
-  followers:any,
-  following:any
-}
+type Count = {
+  followers: number;
+  following: number;
+};
 
 export default function Profile() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
-  const [detail,setdetail]=useState<Userdata | null>(null)
-  const[count,setcount]=useState<count|null>(null)
-  const [countloading,setcountloading]=useState(true)
-  const [postloading,setpostloading]=useState(true)
+  const [detail, setDetail] = useState<Userdata | null>(null)
+  const [count, setCount] = useState<Count | null>(null);
+  const [countLoading, setCountLoading] = useState(true)
+  const [postLoading, setPostLoading] = useState(true)
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
@@ -75,8 +74,8 @@ export default function Profile() {
   };
 
   useEffect(()=>{
-    const total =async()=>{
-      setcountloading(true)
+    const total = async()=>{
+      setCountLoading(true)
       const authtoken = localStorage.getItem("token")
       const response = await axios.get("http://localhost:5000/connect/count",{
         headers:{
@@ -87,14 +86,14 @@ export default function Profile() {
       })
       console.log(response.data)
 
-      const userCount :count={
-        followers:response.data.follower,
-        following:response.data.following
-      }
-      
-      setcount(userCount)
+      const userCount: Count = {
+        followers: response.data.follower,
+        following: response.data.following,
+      };
+
+      setCount(userCount);
     
-      setcountloading(false)
+      setCountLoading(false)
      
       
     }
@@ -106,7 +105,7 @@ export default function Profile() {
     if (!mounted) return;
     
     const fetchPosts = async () => {
-      setpostloading(true);
+      setPostLoading(true);
       const authtoken = localStorage.getItem("token");
 
       try {
@@ -128,11 +127,11 @@ export default function Profile() {
           name: response.data.name,
           username: response.data.username,
         };
-        setdetail(userDetails);
+        setDetail(userDetails);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
-      setpostloading(false);
+      setPostLoading(false);
     };
 
     fetchPosts();
@@ -157,8 +156,8 @@ export default function Profile() {
         }
       );
       
-      const newPost = response.data;
-      if (!newPost.name) {
+      const newPost = response.data.data;
+      if (!newPost?.name) {
         throw new Error("Post data is incomplete");
       }
       
@@ -201,14 +200,14 @@ export default function Profile() {
       <div className="text-white w-full min-h-screen sm:flex flex-row">
         <Sidebar/>
         <div className="border-gray-700 border-x-2 sm:basis-11/12 lg:basis-6/12">
-          {countloading || postloading ? (
+          {countLoading || postLoading ? (
             <Loader/>
           ) : (
             <>
               <div className="border-b-2 border-gray-700">
                 <div className="flex ">
                   <div>
-                    <div className="w-20 basic-11/12 h-20 rounded-full border-2 border-gray-500 flex justify-center items-center text-3xl ml-10 xl:mr-60 mt-10 font-bold ">{detail?.name[0].toUpperCase()}</div>
+                    <div className="w-20 basic-11/12 h-20 rounded-full border-2 border-gray-500 flex justify-center items-center text-3xl ml-10 xl:mr-60 mt-10 font-bold ">{detail?.name && detail.name.length > 0 ? detail.name[0].toUpperCase() : 'U'}</div>
                     <div className="text-xl ml-4 mt-4">{detail?.name}</div>
                     <div className="text-gray-500 ml-4 text-lg">@{detail?.username}</div>
                   </div>
@@ -297,7 +296,7 @@ export default function Profile() {
                   <div key={post.id} className="pt-2 pl-4 w-full border-b-2 border-gray-700 overflow-auto pb-4">
                     <div className="flex">
                       <div className="h-10 w-10 border-2 border-gray-700 rounded-full flex justify-center font-semibold items-center mt-1">
-                        {post.name[0].toUpperCase()}
+                        {post.name && post.name.length > 0 ? post.name[0].toUpperCase() : 'U'}
                       </div>
                       <div className="flex mt-2 ml-2">
                         <div className="flex font-semibold text-lg">{post.name}</div>

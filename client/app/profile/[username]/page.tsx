@@ -2,8 +2,7 @@
 import Loader from "@/components/loading";
 import Sidebar from "@/components/sideber";
 import axios from "axios";
-import { setLazyProp } from "next/dist/server/api-utils";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 
 interface Post {
@@ -16,24 +15,23 @@ interface Post {
   username: string;
 }
 
-type Userdata ={
-  name:String,
-  username:String,
-  id:String
+type Userdata = {
+  name: string;
+  username: string;
+  id: string;
+};
 
-}
-
-type count ={
-  followers:any,
-  following:any
-}
+type Count = {
+  followers: number;
+  following: number;
+};
 
 export default function Profile() {
   const params = useParams()
   const [posts, setPosts] = useState<Post[]>([]);
   const [likedPosts, setLikedPosts] = useState<{ [key: number]: boolean }>({});
   const [detail,setdetail]=useState<Userdata | null>(null)
-  const[count,setcount]=useState<count|null>(null)
+  const [count, setCount] = useState<Count | null>(null);
   const [countloading,setcountloading]=useState(true)
   const [postloading,setpostloading]=useState(true)
   const[followed,setfollowed]=useState(true)
@@ -78,28 +76,26 @@ export default function Profile() {
   }, [mounted, params?.username]);
 
 
-  useEffect(()=>{
-const user = async()=>{
-  const authtoken = localStorage.getItem("token")
-  const username = params?.username
-  const response = await axios.get(`http://localhost:5000/profile/name/${username}`,{
-    headers: {
-      Authorization: `Bearer ${authtoken}`,
-      "Content-Type": "application/json",
-    },
-  })
- 
-    const userDetails:Userdata = {
-          name: response.data.name, 
-          username: response.data.username, 
-          id:response.data.id
-        };
-        setdetail(userDetails)
-        
+  useEffect(() => {
+    const user = async () => {
+      const authtoken = localStorage.getItem("token");
+      const username = params?.username;
+      const response = await axios.get(`http://localhost:5000/profile/name/${username}`, {
+        headers: {
+          Authorization: `Bearer ${authtoken}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-}
-user()
-  },[])
+      const userDetails: Userdata = {
+        name: response.data.name,
+        username: response.data.username,
+        id: response.data.id,
+      };
+      setdetail(userDetails);
+    };
+    user();
+  }, [params?.username]);
 
   useEffect(()=>{
     const checkfollow =async()=>{
@@ -153,12 +149,12 @@ user()
             },
           }
         );
-        const userCount :count={
-          followers:response.data.follower,
-          following:response.data.following
-        }
-        
-        setcount(userCount)
+        const userCount: Count = {
+          followers: response.data.follower,
+          following: response.data.following,
+        };
+
+        setCount(userCount);
         setcountloading(false)
        
       
@@ -198,8 +194,8 @@ user()
   if (!mounted) return null;
 
   return (
-    <div className="md:flex justify-center items-center w-full h-screen bg-black">
-      <div className="text-white w-full h-screen sm:flex flex-row">
+    <div className="md:flex justify-center items-center w-full min-h-screen bg-black">
+      <div className="text-white w-full min-h-screen sm:flex flex-row">
  
          
          <Sidebar/>

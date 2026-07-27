@@ -1,7 +1,6 @@
 "use client"
 
 import Tick from "@/components/tick";
-import {signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 

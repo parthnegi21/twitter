@@ -19,6 +19,7 @@ const router = express_1.default.Router();
 router.post('/post', auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.user) {
         res.status(401).json({ error: 'User not authenticated' });
+        return;
     }
     const { id, name, username } = req.user;
     const response = yield db_1.default.post.create({
@@ -35,54 +36,75 @@ router.post('/post', auth_1.default, (req, res) => __awaiter(void 0, void 0, voi
 router.get("/mypost", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id, name, username } = req.user;
     const response = yield db_1.default.post.findMany({
-        where: { authorId: id }
+        where: { authorId: id },
     });
-    res.json({ name: name,
-        username: username,
-        response
-    });
+    res.json({ name, username, response });
 }));
 router.delete("/delete", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const postid = req.body.postid;
     const { id } = req.user;
-    const post = yield db_1.default.post.findUnique({
+    const post = yield db_1.default.post.findFirst({
         where: {
             authorId: id,
-            id: postid
-        }
+            id: postid,
+        },
     });
     if (!post) {
-        res.json("No Post found");
+        res.status(404).json({ msg: "No Post found" });
+        return;
     }
-    else {
-        const response = yield db_1.default.post.delete({
-            where: {
-                authorId: id,
-                id: postid
-            }
-        });
-        if (response) {
-            res.json({ msg: "Deleted successfully" });
-        }
-    }
+    yield db_1.default.post.delete({
+        where: { id: postid },
+    });
+    res.json({ msg: "Deleted successfully" });
 }));
-router.get("/bulk", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id: authorId } = req.user;
-    const response = yield db_1.default.post.findMany({});
-    if (response.length == 0) {
+router.get("/bulk", auth_1.default, (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield db_1.default.post.findMany();
+    if (response.length === 0) {
         res.json({ msg: "no post found" });
+        return;
     }
-    else {
-        res.json(response);
-    }
+    res.json(response);
 }));
 router.get("/userpost/:username", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const username = req.params.username;
+    const usernameParam = req.params.username;
+    const username = Array.isArray(usernameParam) ? usernameParam[0] : usernameParam;
     const response = yield db_1.default.post.findMany({
-        where: {
-            username
-        }
+        where: { username },
     });
     res.json(response);
+}));
+router.post("/bookmark", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.user;
+    const postId = req.body.postId;
+    const existing = yield db_1.default.bookmark.findFirst({
+        where: {
+            userId: id,
+            postId: postId,
+        },
+    });
+    if (existing === null) {
+        yield db_1.default.bookmark.create({
+            data: {
+                userId: id,
+                postId: postId,
+            },
+        });
+        res.json({ msg: "Bookmark added" });
+    }
+    else {
+        yield db_1.default.bookmark.delete({
+            where: { id: existing.id },
+        });
+        res.json({ msg: "Bookmark removed" });
+    }
+}));
+router.get("/bookmarks", auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.user;
+    const bookmarks = yield db_1.default.bookmark.findMany({
+        where: { userId: id },
+        include: { post: true },
+    });
+    res.json(bookmarks.map((b) => b.post));
 }));
 exports.default = router;
