@@ -4,6 +4,7 @@
   "main": "index.ts",
   "type": "commonjs",
   "scripts": {
+    "dev": "ts-node index.ts",
     "start": "node dist/index.js"
   },
   "dependencies": {
@@ -23,6 +24,6 @@
     "@types/node": "^22.10.1",
     "@types/socket.io": "^3.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.9.3"
   }
 }

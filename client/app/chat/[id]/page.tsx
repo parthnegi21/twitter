@@ -40,6 +40,8 @@ export default function Home() {
   const [userChat, setUserChat] = useState<ChatMessage[]>([]);
   const centerPanelRef = useRef<HTMLDivElement>(null);
   const rightPanelRef = useRef<HTMLDivElement>(null);
+  const [selectedUser, setSelectedUser] = useState("");
+  const currentUserId = params.id as string;
 
 
   useEffect(() => {
@@ -217,16 +219,21 @@ export default function Home() {
             {users.map((user, index) => (
               <div
                 key={index}
-                className="flex h-20 border-t-2 border-gray-700 hover:bg-gray-900 items-center"
+                className={`flex h-20 border-y-2 border-gray-700 hover:bg-gray-900 items-center ${
+  String(currentUserId) === String(user.id) ? "bg-gray-800" : ""
+}`}
                 onClick={() => {
+                  
                   router.push(`/chat/${user.id}`);
+                 
+                  
                 }}
               >
                 <div className="border-2 h-12 w-12 mt-1 text-2xl ml-4 flex justify-center items-center rounded-full">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="text-lg mt-1 ml-4">{user.name}</div>
-                <div className="text-gray-500 mt-1 ml-1 text-lg">
+                <div className="text-blue-300 mt-1 ml-1 text-lg">
                   @{user.username || "defaultUsername"}
                 </div>
               </div>
@@ -240,6 +247,9 @@ export default function Home() {
           ref={rightPanelRef}
           className="block border-r-2 border-gray-700 md:basis-4/12 max-h-screen relative"
         >
+         <div className="text-xl font-semibold">
+  {currentUserId ? users.find(u => String(u.id) === String(currentUserId))?.name : 'Select a User'}
+</div>
           <div className="w-full h-[calc(100vh-70px)]  pb-14 mt-10 overflow-auto flex flex-col">
             {loading ? <Loader/> :(<> 
               {userId &&

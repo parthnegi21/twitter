@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Request, Response, NextFunction, response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 interface AuthenticatedRequest extends Request {
   user?: string | JwtPayload;
@@ -13,24 +13,23 @@ const authMiddleware = async (
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(403).json({ msg: "No token provided or invalid format" });
-    return; 
+    res.status(403).json({ msg: 'No token provided or invalid format' });
+    return;
   }
 
   const token = authHeader.split(' ')[1];
 
   try {
-    const checkToken = jwt.verify(token, "your_secret_key");
-    console.log(checkToken)
+    const checkToken = jwt.verify(token, process.env.JWT_SECRET || 'your_secret_key');
 
     if (checkToken) {
-      req.user = checkToken; 
-      next(); 
+      req.user = checkToken;
+      next();
     } else {
-      res.status(401).json({ msg: "Invalid token" });
+      res.status(401).json({ msg: 'Invalid token' });
     }
   } catch (error) {
-    res.status(401).json({ msg: "Token verification failed", error });
+    res.status(401).json({ msg: 'Token verification failed', error });
   }
 };
 
