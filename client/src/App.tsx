@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:5000/profile';
+const API_BASE = 'https://twitter-bclj.onrender.com/profile';
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);

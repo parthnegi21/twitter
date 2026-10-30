@@ -69,7 +69,7 @@ export default function Home() {
       const authtoken = localStorage.getItem("token");
 
       try {
-        const response = await axios.get("http://localhost:5000/post/bulk", {
+        const response = await axios.get("https://twitter-bclj.onrender.com/post/bulk", {
           headers: {
             Authorization: `Bearer ${authtoken}`,
             "Content-Type": "application/json",
@@ -94,7 +94,7 @@ export default function Home() {
     const authtoken = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "http://localhost:5000/react/like",
+        "https://twitter-bclj.onrender.com/react/like",
         { postId, authorId },
         {
           headers: {
@@ -117,7 +117,7 @@ export default function Home() {
     const authtoken = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "http://localhost:5000/post/bookmark",
+        "https://twitter-bclj.onrender.com/post/bookmark",
         { postId },
         {
           headers: {
@@ -142,7 +142,7 @@ export default function Home() {
       if (!content.length && !imageUrl) return;
 
       const response = await axios.post(
-        "http://localhost:5000/post/post",
+        "https://twitter-bclj.onrender.com/post/post",
         { 
           content,
           imageUrl

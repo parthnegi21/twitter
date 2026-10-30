@@ -44,7 +44,7 @@ export default function Home() {
 
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:5000");
+    const socket = new WebSocket("wss://twitter-bclj.onrender.com");
     setWs(socket);
 
     socket.onmessage = (event) => {
@@ -71,7 +71,7 @@ export default function Home() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       const authtoken = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/profile/my", {
+      const response = await axios.get("https://twitter-bclj.onrender.com/profile/my", {
         headers: {
           Authorization: `Bearer ${authtoken}`,
           "Content-Type": "application/json",
@@ -122,7 +122,7 @@ export default function Home() {
     const fetchUsers = async () => {
       setLoading(true);
       const authtoken = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/message/users", {
+      const response = await axios.get("https://twitter-bclj.onrender.com/message/users", {
         headers: {
           Authorization: `Bearer ${authtoken}`,
           "Content-Type": "application/json",
@@ -140,7 +140,7 @@ export default function Home() {
 
     const fetchMyMessages = async () => {
       const authtoken = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:5000/message/send/${id}`, {
+      const response = await axios.get(`https://twitter-bclj.onrender.com/message/send/${id}`, {
         headers: {
           Authorization: `Bearer ${authtoken}`,
           "Content-Type": "application/json",
@@ -157,7 +157,7 @@ export default function Home() {
 
     const fetchUserMessages = async () => {
       const authtoken = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:5000/message/receive/${id}`, {
+      const response = await axios.get(`https://twitter-bclj.onrender.com/message/receive/${id}`, {
         headers: {
           Authorization: `Bearer ${authtoken}`,
           "Content-Type": "application/json",

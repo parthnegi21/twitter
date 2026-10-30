@@ -37,7 +37,7 @@ export default function Home() {
           return;
         }
 
-        const response = await axios.get(`http://localhost:5000/profile/search/${searchTerm}`, {
+        const response = await axios.get(`https://twitter-bclj.onrender.com/profile/search/${searchTerm}`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }

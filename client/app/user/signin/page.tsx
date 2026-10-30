@@ -1,6 +1,7 @@
 "use client"
 
 import { signin } from "@/app/api/user/signin/actions"
+import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -58,6 +59,24 @@ export default function Signin() {
               className="bg-white w-9/12 h-12 rounded-3xl text-2xl font-semibold"
             >
               Next
+            </button>
+          </div>
+
+          <div className="flex justify-center mt-10">
+            <button
+              onClick={() => signIn("google", { callbackUrl: "http://localhost:3000/user/oauth-callback" })}
+              className="bg-white w-9/12 h-12 rounded-3xl text-2xl font-semibold"
+            >
+              Continue with Google
+            </button>
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() => signIn("github", { callbackUrl: "http://localhost:3000/user/oauth-callback" })}
+              className="bg-white w-9/12 h-12 rounded-3xl text-2xl font-semibold"
+            >
+              Continue with GitHub
             </button>
           </div>
 

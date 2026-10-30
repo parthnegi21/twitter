@@ -27,7 +27,7 @@ export default function Home() {
         setloading(true)
         const chat = async()=>{
             const authtoken = localStorage.getItem("token")
-            const response = await axios.get("http://localhost:5000/message/users",{
+            const response = await axios.get("https://twitter-bclj.onrender.com/message/users",{
                 headers: {
                     Authorization: `Bearer ${authtoken}`,
                     "Content-Type": "application/json",

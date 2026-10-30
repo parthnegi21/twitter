@@ -51,7 +51,7 @@ export default function Profile() {
       const username = params?.username
 
       
-        const response = await axios.get(`http://localhost:5000/post/userpost/${username}`, {
+        const response = await axios.get(`https://twitter-bclj.onrender.com/post/userpost/${username}`, {
           headers: {
             Authorization: `Bearer ${authtoken}`,
             "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export default function Profile() {
     const user = async () => {
       const authtoken = localStorage.getItem("token");
       const username = params?.username;
-      const response = await axios.get(`http://localhost:5000/profile/name/${username}`, {
+      const response = await axios.get(`https://twitter-bclj.onrender.com/profile/name/${username}`, {
         headers: {
           Authorization: `Bearer ${authtoken}`,
           "Content-Type": "application/json",
@@ -100,7 +100,7 @@ export default function Profile() {
   useEffect(()=>{
     const checkfollow =async()=>{
       const authtoken = localStorage.getItem("token")
-      const response = await axios.post("http://localhost:5000/connect/check",{
+      const response = await axios.post("https://twitter-bclj.onrender.com/connect/check",{
         id:detail?.id
       },{
         headers:{
@@ -140,7 +140,7 @@ export default function Profile() {
         }
   
         const response = await axios.post(
-          `http://localhost:5000/connect/usercount`, 
+          `https://twitter-bclj.onrender.com/connect/usercount`, 
           { id:id },
           {
             headers: {
@@ -172,7 +172,7 @@ export default function Profile() {
     const authtoken = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "http://localhost:5000/react/like",
+        "https://twitter-bclj.onrender.com/react/like",
         { postId, authorId },
         {
           headers: {
@@ -219,7 +219,7 @@ export default function Profile() {
             const id = detail?.id;
              
             const authtoken = localStorage.getItem("token")
-             const response = await axios.post("http://localhost:5000/connect/follow",
+             const response = await axios.post("https://twitter-bclj.onrender.com/connect/follow",
              {
               id:id
              }, {

@@ -77,7 +77,7 @@ export default function Profile() {
     const total = async()=>{
       setCountLoading(true)
       const authtoken = localStorage.getItem("token")
-      const response = await axios.get("http://localhost:5000/connect/count",{
+      const response = await axios.get("https://twitter-bclj.onrender.com/connect/count",{
         headers:{
           Authorization: `Bearer ${authtoken}`,
           "Content-Type": "application/json",
@@ -109,7 +109,7 @@ export default function Profile() {
       const authtoken = localStorage.getItem("token");
 
       try {
-        const response = await axios.get("http://localhost:5000/post/mypost", {
+        const response = await axios.get("https://twitter-bclj.onrender.com/post/mypost", {
           headers: {
             Authorization: `Bearer ${authtoken}`,
             "Content-Type": "application/json",
@@ -143,7 +143,7 @@ export default function Profile() {
       if (!content.length && !imageUrl) return;
 
       const response = await axios.post(
-        "http://localhost:5000/post/post",
+        "https://twitter-bclj.onrender.com/post/post",
         { 
           content,
           imageUrl
@@ -174,7 +174,7 @@ export default function Profile() {
     const authtoken = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "http://localhost:5000/react/like",
+        "https://twitter-bclj.onrender.com/react/like",
         { postId, authorId },
         {
           headers: {

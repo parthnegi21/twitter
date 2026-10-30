@@ -121,4 +121,43 @@ router.get("/search/:term", authMiddleware, async (req: AuthenticatedRequest, re
     res.json(users);
 });
 
+router.post("/oauth", async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+        const { provider, providerUserId, email, name } = req.body;
+
+        if (!email) {
+            res.status(400).json({ msg: 'Email is required' });
+            return;
+        }
+
+        let user = await client.user.findUnique({ where: { email } });
+
+        if (!user) {
+            const usernameBase = `${(provider ?? 'user').toLowerCase()}_${String(email).split('@')[0].replace(/[^a-zA-Z0-9]/g, '').slice(0, 20)}`;
+            const username = `${usernameBase}${Math.floor(Math.random() * 900 + 100)}`;
+            const randomPassword = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+
+            user = await client.user.create({
+                data: { email, name: name || email, password: randomPassword, username },
+            });
+        } else if (name) {
+            await client.user.update({ where: { id: user.id }, data: { name } });
+        }
+
+        const token = jwt.sign(
+            { id: user.id, name: user.name, email: user.email, username: user.username },
+            JWT_SECRET
+        );
+
+        res.json({
+            msg: 'Signed in successfully',
+            token,
+            user: { id: user.id, name: user.name, email: user.email, username: user.username },
+        });
+    } catch (error) {
+        console.error('OAuth error:', error);
+        res.status(500).json({ msg: 'OAuth failed', error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+});
+
 export default router

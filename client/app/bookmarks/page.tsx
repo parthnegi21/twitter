@@ -33,7 +33,7 @@ export default function Bookmarks() {
       const authtoken = localStorage.getItem("token");
 
       try {
-        const response = await axios.get("http://localhost:5000/post/bookmarks", {
+        const response = await axios.get("https://twitter-bclj.onrender.com/post/bookmarks", {
           headers: {
             Authorization: `Bearer ${authtoken}`,
             "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export default function Bookmarks() {
     const authtoken = localStorage.getItem("token");
     try {
       await axios.post(
-        "http://localhost:5000/post/bookmark",
+        "https://twitter-bclj.onrender.com/post/bookmark",
         { postId },
         {
           headers: {
