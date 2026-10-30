@@ -21,16 +21,19 @@ export function startWebSocketServer(server: HTTPServer) {
       }
 
       if (type === 'sendMessage') {
+        const text = typeof content === "string" ? content.trim() : "";
+        const msg = text.slice(0, 500);
+
         if (userConnections[targetUserId]) {
           userConnections[targetUserId].send(
-            JSON.stringify({ content, senderId: userId })
+            JSON.stringify({ content: msg, senderId: userId })
           );
 
           const savedMessage = await client.message.create({
             data:{
-              fromUserId:userId,
+              fromUserId:parseInt(userId,10),
               toUserId:parseInt(targetUserId,10) ,
-              text:content
+              text:msg
 
             }
           })
@@ -41,9 +44,9 @@ export function startWebSocketServer(server: HTTPServer) {
           console.log(`${targetUserId} is offline`);
           const offlineMessage = await client.message.create({
             data:{
-              fromUserId:userId,
+              fromUserId:parseInt(userId,10),
               toUserId:parseInt(targetUserId,10) ,
-              text:content
+              text:msg
             }
           })
           console.log(offlineMessage)

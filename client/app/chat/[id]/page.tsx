@@ -100,20 +100,21 @@ export default function Home() {
   // Handle sending a message
   const handleSendMessage = () => {
     if (ws && userId && id) {
+      const content = message.trim();
+      if (!content) return;
 
-      if(ws.readyState ==WebSocket.OPEN){
-      ws.send(
-        JSON.stringify({
-          type: "sendMessage",
-          userId,
-          targetUserId: id,
-          content: message,
-        })
-      );
-      setChatLog((prevLog) => [...prevLog, { senderId: userId, content: message }]);
-      setMessage("");
-    }
-    
+      if (ws.readyState == WebSocket.OPEN) {
+        ws.send(
+          JSON.stringify({
+            type: "sendMessage",
+            userId,
+            targetUserId: id,
+            content,
+          })
+        );
+        setChatLog((prevLog) => [...prevLog, { senderId: userId, content }]);
+        setMessage("");
+      }
     }
   };
 
@@ -296,6 +297,7 @@ export default function Home() {
               className="w-5/6 ml-6 sm:mb-8 flex bg-gray-900 border-2 border-gray-500 rounded-3xl text-xl h-12 pt-2 pl-6"
               placeholder="Start the Conversation"
               value={message}
+              maxLength={500}
               onChange={(e) => setMessage(e.target.value)}
             />
             <svg
