@@ -53,4 +53,6 @@ const handler = NextAuth({
   },
 });
 
-export const { GET, POST } = handler;
+export const GET = handler;
+export const POST = handler;
+export const dynamic = "force-dynamic";
