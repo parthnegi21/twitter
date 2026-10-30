@@ -1,6 +1,6 @@
 "use client"
 
-import { signup } from "@/app/api/user/signup/route"
+import { signup } from "@/app/api/user/signup/actions"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
