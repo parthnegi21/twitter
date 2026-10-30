@@ -1,4 +1,4 @@
-import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 
@@ -28,8 +28,9 @@ function App() {
       localStorage.setItem('token', response.data.token);
       setMessage(response.data.msg);
       navigate('/dashboard');
-    } catch (error: any) {
-      setMessage(error.response?.data?.msg || 'Request failed');
+    } catch (error) {
+      const msg = axios.isAxiosError(error) ? error.response?.data?.msg : undefined;
+      setMessage(msg || 'Request failed');
     }
   };
 

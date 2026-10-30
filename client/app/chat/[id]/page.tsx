@@ -40,7 +40,6 @@ export default function Home() {
   const [userChat, setUserChat] = useState<ChatMessage[]>([]);
   const centerPanelRef = useRef<HTMLDivElement>(null);
   const rightPanelRef = useRef<HTMLDivElement>(null);
-  const [selectedUser, setSelectedUser] = useState("");
   const currentUserId = params.id as string;
 
 

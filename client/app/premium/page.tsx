@@ -66,7 +66,7 @@ export default function Home() {
         </div>
 
     </div>
-    <div style={{backgroundColor:"rgb(49 50 53)" ,height: window.innerWidth >= 1280 ? "450px" : "380px"}} className="rounded-xl cursor-pointer border-2 border-gray-700 hover:border-blue-300  xl:ml-10 text-white mt-10  w-96 ">
+    <div style={{backgroundColor:"rgb(49 50 53)"}} className="h-[380px] xl:h-[450px] rounded-xl cursor-pointer border-2 border-gray-700 hover:border-blue-300  xl:ml-10 text-white mt-10  w-96 ">
         <div className="text-xl mt-6 ml-6 font-semibold">Basic</div>
         <div className="flex ml-6 "> 
         <div className="text-3xl mt-1 font-bold">₹215.87</div>
@@ -106,7 +106,7 @@ export default function Home() {
         
 
     </div>
-    <div style={{backgroundColor:"rgb(49 50 53)" ,height: window.innerWidth >= 1280 ? "450px" : "350px"}} className="rounded-xl cursor-pointer border-2  border-gray-700 hover:border-blue-300 xl:ml-10 mb-10 text-white mt-10  w-96 ">
+    <div style={{backgroundColor:"rgb(49 50 53)"}} className="h-[350px] xl:h-[450px] rounded-xl cursor-pointer border-2  border-gray-700 hover:border-blue-300 xl:ml-10 mb-10 text-white mt-10  w-96 ">
         <div className="text-xl mt-6 ml-6 font-semibold">Premium+</div>
         <div className="flex ml-6 "> 
         <div className="text-3xl mt-1 font-bold">₹1,113.33</div>
